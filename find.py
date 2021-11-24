@@ -165,7 +165,7 @@ def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,2,26,2,14]):
         if cas_consec==nb_pas:
             liste_cas.append([i,dataSort['Center_time'][i]])
 
-        S=[dataSort['Center_time'][i]]]+liste_canal+[dataSort['MLT'][i]],dataSort['INVLAT'][i]],dataSort['mod16'][i]]]+[cas_consec]+[bug_consec]
+        S=[dataSort['Center_time'][i]]+liste_canal+[dataSort['MLT'][i],dataSort['INVLAT'][i],dataSort['mod16'][i]]+[cas_consec]+[bug_consec]
         infos=infos.append({key[j] : S[j] for j in range(len(S))},ignore_index=True)
 
         # if i%10==0:

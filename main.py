@@ -139,3 +139,67 @@ def AnalyseSplit(dossier, n=12,l=14979648, nb_canaux_max = 2, pas_bug = 4, nbr_v
                 f.writelines("1\n"+str(k)+"\n"+str(num_lines_ions)+"\n"+str(num_lines_mlt))
 
         k=Analyse(num_lines_ions//100000+1,ud+"/obj5 ("+str(i)+")",ud+"/obj7.asc",index,ud+"/resultats.txt", nb_canaux_max, pas_bug, nbr_vide)
+
+
+
+
+def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,2,26,2,14]):
+    """
+    Récupère l'état de la recherche de cas chargeants dans fichier_index.
+    Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
+    écris les instants détectés dans fichier_resultats et actualise fichier_index à chaque itération
+    Utilise la version CasDeCharge2 avec args comme arguments
+    """
+
+    t0=time.time()
+    t2=t0
+
+    # Récupérer l'état de la recherche de cas chargeants
+    # iions est l'indice de la première ligne non analysée du fichier_ion, pareil pour imlt
+    # Nions est le nombre de lignes du fichier_ion, idem pour Nmlt
+    with open (fichier_index) as f:
+        iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
+
+
+    # fions est la ligne de fin de l'itération
+    # fmlt est une prédiction (car il faut une borne) de la fin de l'itération
+    fions=min(Nions,iions+100000)
+    fmlt=min(Nmlt,imlt+5000)
+
+    # j le nombre de lignes de fichier_mlt parcourues lors de la construction de dat
+    dat,j=charge_ligne(fichier_ions,fichier_mlt,iions,fions,imlt,fmlt)
+
+    # datsort correspond à dat selectionné par Tri. Elle ne contient que des lignes qui peuvent contenir des cas de charge.
+    datsort=dat.iloc[Tri(dat, nbr_vide)]
+
+
+    # L est la liste des résultats de la détection de cas de charge.
+    L,infos=CasdeCharge2(datsort, args)
+    del datsort
+
+
+    # On écrit à la suite des résultats précédents les instants détectés dans fichier_resultats.
+    with open(fichier_resultats,'a') as f:
+        for cas in L:
+            f.writelines([str(cas[1]),'\n'])
+
+    # fmlt est actualisé pour avoir la valeur exacte de l'indice de fin de parcourt.
+    fmlt=imlt+j
+
+    # on actualise le fichier_index
+    with open(fichier_index, 'w') as f:
+        f.writelines([str(fions),'\n',str(fmlt),'\n',str(Nions),'\n',str(Nmlt)])
+
+
+    # sinon on recommence avec pour indice de départ celui où on s'est arrêté.
+    iions=fions
+    imlt=fmlt
+
+    t2=time.time()
+
+    print(str(dat['Center_time'][len(dat)-1])+'   analyse terminée,   temps mis '+str(int((t2-t0)*100)/100)+'s')
+
+    del dat
+
+    # on renvoie l'indice de mlt où le parcourt s'est arrêté. Cela permet d'optimiser AnalyseSplit ainsi que les infos recueillies
+    return(fmlt,infos)
