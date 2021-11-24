@@ -12,6 +12,7 @@ from temps import temps
 from tri import Tri
 from find import CasdeCharge
 from data import charge_ligne
+import pandas as pd
 import time
 import os
 
@@ -143,13 +144,15 @@ def AnalyseSplit(dossier, n=12,l=14979648, nb_canaux_max = 2, pas_bug = 4, nbr_v
 
 
 
-def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,2,26,2,14]):
+def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,2,26,2,14,14]):
     """
     Récupère l'état de la recherche de cas chargeants dans fichier_index.
     Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
     écris les instants détectés dans fichier_resultats et actualise fichier_index à chaque itération
     Utilise la version CasDeCharge2 avec args comme arguments
     """
+
+    nbr_vide=args[10]
 
     t0=time.time()
     t2=t0
