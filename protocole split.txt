@@ -1,0 +1,10 @@
+========= PROTOCOLE POUR SPLIT ===============
+
+Dans le cas d'un fichier obt5.asc de tailler sup à 1Go:
+
+1. Ouvrir Git Bash et se placer dans le dossier dudit fichier: cd "A:\Travail\X\PSC\python\data\2017"
+2. Sélectionner les fichiers xaa, xab, etc créés par split
+3. Cliquer sur F2 pour les renommer (normalement c'est le dernier qui se fait renommer) et taper obj7
+4. Renommer le dernier fichier en "obj7 (13)"
+
+Normalement vous avez des fichiers "obj7 (2)" à "obj7 (13)" prêts à être utilisés par AnalyseSplit
