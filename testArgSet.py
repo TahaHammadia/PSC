@@ -1,5 +1,5 @@
-setMod32 = [(i,j) for i in range(2, 33) for j in range(1, i)]
-setMod16 = [(i,j) for i in range(2, 17) for j in range(1, i)]
+setMod32 = [(i,j) for i in range(2, 33) for j in range(1, i)] # fixé
+setMod16 = [(i,j) for i in range(2, 17) for j in range(1, i)] # fixé
 setCanaux = [(i,j) for i in range(2, 5) for j in range(1, i)]
 setPas = [(i,j) for i in range(3, 10) for j in range(2, i)]
 setSeuil = [(i,j) for i in range(100, 1010, 10) for j in range(50, i, 10)]
@@ -19,6 +19,7 @@ def loss(args, files):
     return len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
 
 lossValue = float('inf')
+listMin = []
 
 for canalmax_mod32, canalmin_mod32 in setMod32:
     for canalmax_mod16, canalmin_mod16 in setMod16:
@@ -26,4 +27,12 @@ for canalmax_mod32, canalmin_mod32 in setMod32:
             for nb_pas, pas_bug in setPas:
                 for seuil_actif, seuil_inactif in setSeuil:
                     for nbr_vide in SetVide:
-                        if loss([seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide], )
+                        val = loss([seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide], files)
+                        if val < lossValue:
+                            loss Value = val
+                            listMin = [[seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]]
+                        elif val == lossValue:
+                            listMin.append([seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide])
+
+print(lossValue)
+print(listMin)
