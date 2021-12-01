@@ -234,4 +234,9 @@ def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     return infos
 
 def Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args):
-    return Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[2]
+    res = (Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[2] > 0)
+    with open (fichier_index) as f:
+        iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
+    with open(fichier_index, 'w') as f:
+        f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
+    return res

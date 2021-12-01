@@ -91,7 +91,7 @@ def charge_ligne(fichier_ions,fichier_mlt,ligne_ions_debut,ligne_ions_fin,ligne_
     #   les count correspondent donc aux énergies de leur indice modulo 32 (si le fichier commence bien au premier canal)
         if i%32==17:
             mod16 = abs(float(ions['Center_energy'][i])) < 1
-    #         on vérifie si on est en mode de détection 16 ou 32 canaux en testant si l'energie du 17eme canal est 0
+    #       on vérifie si on est en mode de détection 16 ou 32 canaux en testant si l'energie du 17eme canal est 0
 
 
         if i%32==0 and i!=0:
@@ -104,13 +104,13 @@ def charge_ligne(fichier_ions,fichier_mlt,ligne_ions_debut,ligne_ions_fin,ligne_
                     break
                 k+=1
 
-                # On descend la liste et on prend le premier instant tel que : |t' - t| < 1 s.
-                # Sinon, on met 0,0 ; la ligne sera refusée par le tri.
+                # On descend la liste et on prend le premier instant tel que : |t' - t| < 3 s.
+                # Sinon, on met 50,0 ; la ligne sera acceptée par le tri.
 
             if bool_pos :
                 S=[t]+S+[mlt['MLT'][k],mlt['INVLAT'][k],mod16]
             else :
-                S=[t]+S+[0,0,mod16]
+                S=[t]+S+[50,0,mod16]
 
             dat=dat.append({key[j] : S[j] for j in range(len(S))},ignore_index=True)
             S = []

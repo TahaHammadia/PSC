@@ -28,9 +28,9 @@ f_mlt = "obj7.asc"
 f_idx = "indice.txt"
 f_res = "resultat.txt"
 
-files0 = [(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/"]]
+files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/"]])
 
-files1 = [(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/"]]
+files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/"]])
 
 files = [files0, files1]
 
@@ -47,30 +47,47 @@ def loss(idx, files):
     except KeyError:
 
         cpt = [0, 0]
+
         for i in range(2):
             for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[i] :
+
                 args = [set[idx][0], set[idx][1], default[0], default[1], set[idx][2], set[idx][3], default[2], default[3], default[4], default[5], set[idx][4]]
-                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args) > 0: cpt[i] += 1
-        val = len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
-        lossDict[idx_args] = val
+
+                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args): cpt[i] += 1
+
+        if cpt[0] == 0: val = float('inf')
+
+        else: val = len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
+
+        lossDict[idx] = val
         return val
 
+
 def next(idx, pas, lossValue):
+    """
+    Calcule et renvoie les prochaines valeurs de idx, pas et lossValue dans la méthode du gradient.
+    """
+
     listLoss = [(idx, loss(idx, files))]
     if idx >= pas:
         listLoss.append((idx - pas, loss(idx - pas, files)))
     else:
         listLoss = [(0, loss(0, files))]
 
-    if idx < n - pas:
+    if idx < N - pas:
         listLoss.append((idx + pas, loss(idx + pas, files)))
     else:
         listLoss = [(N - 1, loss(N - 1, files))]
+
     res = -1
-    for i in range(3):
+    for i in range(1, 3):
         if listLoss[i][1] < lossValue:
             lossValue = listLoss[i][1]
             res = listLoss[i][0]
+    if listLoss[0][1] <= lossValue:
+        lossValue = listLoss[0][1]
+        res = idx
+
     if res == -1:
         raise ValueError("lossValue too small")
     if res == idx:
@@ -79,6 +96,7 @@ def next(idx, pas, lossValue):
 
 while pas >= 1:
     idx, pas, lossValue = next(idx, pas, lossValue)
+
 
 print(idx, pas, lossValue)
 
