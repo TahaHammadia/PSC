@@ -11,6 +11,8 @@ canalmax_mod32=26
 canalmin_mod16=2
 canalmin_mod32=2
 
+import pandas as pd
+
 
 def CasdeCharge(dataSort, nb_canaux_max, pas_bug):
     """
@@ -94,8 +96,6 @@ def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,26,2,14,2]):
     canalmin_mod32=args[7]
     canalmax_mod16=args[8]
     canalmin_mod16=args[9]
-
-
 
     key=['Center_time'] +  ["E" + str(i) for i in range(1, 33)] + ['MLT','INVLAT','mod16']+['cas_consec','bug_consec']
     infos=pd.DataFrame(columns=key)

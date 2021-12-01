@@ -1,3 +1,8 @@
+from sys import path
+
+path.append("C:/Users/hp 650 G3/Documents/GitHub/PSC")
+from main import Analyse2Test
+
 setSeuil = [(i,j) for i in range(100, 1010, 10) for j in range(50, i, 10)] # seuil_actif, seuil_inactif
 #setCanaux = [(i,j) for i in range(2, 4) for j in range(1, i)] # nb_canaux_max, nb_canaux_min
 setPas = [(i,j) for i in range(3, 10) for j in range(2, i)] # nb_pas, pas_bug
@@ -15,8 +20,19 @@ pas = 100 * 4 * 2
 
 lossValue = float('inf')
 
+ud0 = "C:/Users/hp 650 G3/Desktop/Test/File[0]/"
+ud1 = "C:/Users/hp 650 G3/Desktop/Test/File[1]/"
 
-files = [[],[]
+f_ions = "obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"
+f_mlt = "obj7.asc"
+f_idx = "indice.txt"
+f_res = "resultat.txt"
+
+files0 = [(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/"]]
+
+files1 = [(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/"]]
+
+files = [files0, files1]
 
 lossDict = {}
 
@@ -26,7 +42,7 @@ def loss(idx, files):
     """
     try :
 
-        return lossDict[idx_args]
+        return lossDict[idx]
 
     except KeyError:
 
@@ -34,12 +50,12 @@ def loss(idx, files):
         for i in range(2):
             for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[i] :
                 args = [set[idx][0], set[idx][1], default[0], default[1], set[idx][2], set[idx][3], default[2], default[3], default[4], default[5], set[idx][4]]
-                if Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args) > 0: cpt[i] += 1
+                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args) > 0: cpt[i] += 1
         val = len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
         lossDict[idx_args] = val
         return val
 
-defext(idx, pas, lossValue) n:
+def next(idx, pas, lossValue):
     listLoss = [(idx, loss(idx, files))]
     if idx >= pas:
         listLoss.append((idx - pas, loss(idx - pas, files)))
@@ -50,15 +66,15 @@ defext(idx, pas, lossValue) n:
         listLoss.append((idx + pas, loss(idx + pas, files)))
     else:
         listLoss = [(N - 1, loss(N - 1, files))]
-        res = -1
+    res = -1
     for i in range(3):
         if listLoss[i][1] < lossValue:
             lossValue = listLoss[i][1]
             res = listLoss[i][0]
     if res == -1:
         raise ValueError("lossValue too small")
-        if res == idx:
-            pas //= 2
+    if res == idx:
+        pas //= 2
     return res, pas, lossValue
 
 while pas >= 1:

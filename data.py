@@ -11,10 +11,10 @@ from linecache import getline, checkcache, clearcache
 from numpy import array, transpose
 
 ad_may="A:/Travail/X/PSC/python/"
-ad_taha="C:/Users/hp 650 G3/Desktop/Librairie l'X/2A/PSC/"
+ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-ad=ad_may
-# ad=ad_taha
+#ad=ad_may
+ad=ad_taha
 
 path.append(ad)
 
