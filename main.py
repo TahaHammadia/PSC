@@ -144,7 +144,7 @@ def AnalyseSplit(dossier, n=12,l=14979648, nb_canaux_max = 2, pas_bug = 4, nbr_v
 
 
 
-def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,2,26,2,14,14]):
+def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,26,2,14,2,14]):
     """
     Récupère l'état de la recherche de cas chargeants dans fichier_index.
     Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
@@ -204,5 +204,34 @@ def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500
 
     del dat
 
-    # on renvoie l'indice de mlt où le parcourt s'est arrêté. Cela permet d'optimiser AnalyseSplit ainsi que les infos recueillies
-    return(fmlt,infos)
+    # on renvoie l'indice de mlt où le parcourt s'est arrêté. Cela permet d'optimiser AnalyseSplit. Ainsi que les infos recueillies
+    return(fmlt,infos,len(L))
+    # return fmlt,datsort
+
+
+def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
+    """
+    Permet d'analyser un dossier contenant le fichier obj5_Panel01_JASON3_AMBRE_P10_SC1.asc comme fichier_ion et obj7.asc comme fichier mlt.
+    Se sert de l'algo CasDeCharge2 à travers Analys2
+    Crée automatiquement l'index et les résultats.
+    Utile lorsqu'on télécharge directement les données depuis CLweb.
+    """
+
+    ud=ad+"data/"+dossier
+
+    num_lines_ions = sum(1 for line in open(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"))
+    num_lines_mlt = sum(1 for line in open(ud+"/obj7.asc"))
+
+    with open(ud+"/index.txt", 'w') as f:
+        f.writelines("1\n1\n"+str(num_lines_ions)+"\n"+str(num_lines_mlt))
+
+    infos=Analyse2(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)[1]
+
+    for i in range(1,num_lines_ions//100000+1):
+        k,S=Analyse2(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)
+        infos.append(S)
+
+    return infos
+
+def Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args):
+    return Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[2]

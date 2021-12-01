@@ -78,7 +78,7 @@ def CasdeCharge(dataSort, nb_canaux_max, pas_bug):
 
 
 
-def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,2,26,2,14]):
+def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,26,2,14,2]):
     """
     Renvoie une liste de couples indice-instant des cas de charge identifiés et des infos sur la détection.
     Un cas de charge correspond à une succession suffisament longue de dépassement de seuil de count dans un nombre restreint de canaux, tandis que les autres restent en dessous d'un autre seuil.
@@ -142,8 +142,14 @@ def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,2,26,2,14]):
                     liste_canal[canal-1]=2
                     n_sup+=1
 
-                    if infos['E'+str(canal)][i]==2:
+
+                    if len(infos)>1 and i-1 in infos.index and infos['E'+str(canal)][i-1]==2:
                         t=True
+
+
+            # if i%10==0:
+            #     print('E'+str(canal)+'  : '+str(A)+'  '+str(A>seuil_inactif)+'   '+str(A>seuil_actif))
+
 
     # bug_consec compte le nombre de fois qu'un même canal dépasse le seuil
         if t:
@@ -168,7 +174,8 @@ def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,2,26,2,14]):
         S=[dataSort['Center_time'][i]]+liste_canal+[dataSort['MLT'][i],dataSort['INVLAT'][i],dataSort['mod16'][i]]+[cas_consec]+[bug_consec]
         infos=infos.append({key[j] : S[j] for j in range(len(S))},ignore_index=True)
 
+
         # if i%10==0:
-        #     print(str(cas_consec)+'   '+str(n))
+        #     print(str(cas_consec)+'   '+str(n_inf)+'   '+str(n_sup))
 
     return liste_cas,infos
