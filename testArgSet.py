@@ -1,11 +1,13 @@
 setSeuil = [(i,j) for i in range(100, 1010, 10) for j in range(50, i, 10)] # seuil_actif, seuil_inactif
 setCanaux = [(i,j) for i in range(2, 4) for j in range(1, i)] # nb_canaux_max, nb_canaux_min
 setPas = [(i,j) for i in range(3, 10) for j in range(2, i)] # nb_pas, pas_bug
-setMod32 = [(i,j) for i in range(2, 33) for j in range(1, i)] # canalmax_mod32, canalmin_mod32
-setMod16 = [(i,j) for i in range(2, 17) for j in range(1, i)] # canalmax_mod16, canalmin_mod16
+setMod32 = [(i,j) for i in range(24, 33) for j in range(1, min(i, 8))] # canalmax_mod32, canalmin_mod32
+setMod16 = [(i,j) for i in range(12, 17) for j in range(1, min(i, 4))] # canalmax_mod16, canalmin_mod16
 setVide = [i for i in range(7, 16)] # nbr_vide
 
-files = [,] # à remplir
+pas = (50, 1, 4, 8, 4, 2)
+
+#files = [,] # à remplir
 
 def loss(args, files):
     """
@@ -18,14 +20,16 @@ def loss(args, files):
     return len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
 
 lossValue = float('inf')
-listMin = []
+par_min = [0]*11
 
 def next(args, lossValue):
     """
     Fonction qui calcule le prochain argument à tester dans une approche de descente du gradient.
     """
-
-    return nextArg, val
+    idx = []
+    #for i in range(11):
+        #if args
+    #return nextArg, val
 
 
 print(lossValue)
