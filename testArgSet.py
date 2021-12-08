@@ -19,6 +19,8 @@ default = 1, 3, 26, 2, 14, 2
 
 pas = 100 * 4 * 2
 
+alpha = 0.3
+
 lossValue = float('inf')
 
 ud0 = "C:/Users/hp 650 G3/Desktop/Test/File[0]/"
@@ -42,6 +44,7 @@ def loss(idx, files):
     """
     files est un tuple ou liste dont le premier élément est une liste de cas de charges et le second une liste de non cas de charges.
     """
+    N = (len(files[0]) + len(files[1])) / 2
     try :
 
         return lossDict[idx]
@@ -61,7 +64,7 @@ def loss(idx, files):
 
         if cpt[0] == 0: val = float('inf')
 
-        else: val = len(files[0]) - cpt[0] + 0.5 * (cpt[1] / cpt[0])
+        else: val = (len(files[0]) - cpt[0] + alpha * cpt[1]) / N
 
         lossDict[idx] = val
         return val
@@ -69,7 +72,7 @@ def loss(idx, files):
 
 def next(idx, pas, lossValue):
     """
-    Calcule et renvoie les prochaines valeurs de idx, pas et lossValue dans la méthode du gradient.
+    Calcule et renvoie les prochaines valeurs de idx, pas et lossValue.
     """
 
     listLoss = [(idx, loss(idx, files))]
