@@ -1,3 +1,4 @@
+import pandas as pd
 # Paramètres qui ont été adaptés d'une manière empirique
 seuil=5*10**2
 #nb_canaux_max=2  # augmenter ce nombre
@@ -10,8 +11,6 @@ canalmax_mod32=26
 
 canalmin_mod16=2
 canalmin_mod32=2
-
-import pandas as pd
 
 
 def CasdeCharge(dataSort, nb_canaux_max, pas_bug):
@@ -80,7 +79,7 @@ def CasdeCharge(dataSort, nb_canaux_max, pas_bug):
 
 
 
-def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,26,2,14,2]):
+def CasdeCharge2(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
     """
     Renvoie une liste de couples indice-instant des cas de charge identifiés et des infos sur la détection.
     Un cas de charge correspond à une succession suffisament longue de dépassement de seuil de count dans un nombre restreint de canaux, tandis que les autres restent en dessous d'un autre seuil.
@@ -96,6 +95,8 @@ def CasdeCharge2(dataSort, args=[500,200,1,3,5,5,26,2,14,2]):
     canalmin_mod32=args[7]
     canalmax_mod16=args[8]
     canalmin_mod16=args[9]
+
+
 
     key=['Center_time'] +  ["E" + str(i) for i in range(1, 33)] + ['MLT','INVLAT','mod16']+['cas_consec','bug_consec']
     infos=pd.DataFrame(columns=key)
