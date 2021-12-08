@@ -35,6 +35,7 @@ files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for d
 files = [files0, files1]
 
 lossDict = {}
+infoDict = {}
 
 def loss(idx, files):
     """
@@ -53,7 +54,9 @@ def loss(idx, files):
 
                 args = [set[idx][0], set[idx][1], default[0], default[1], set[idx][2], set[idx][3], default[2], default[3], default[4], default[5], set[idx][4]]
 
-                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args): cpt[i] += 1
+                cal = Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)
+                infoDict[idx] = cal[0]
+                if cal[1]: cpt[i] += 1
 
         if cpt[0] == 0: val = float('inf')
 
