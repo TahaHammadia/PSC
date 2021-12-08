@@ -13,6 +13,7 @@ setVide = [i for i in range(7, 16)] # nbr_vide
 set = [(a, b, c, d,e) for a,b in setSeuil for c, d in setPas for e in setVide]
 N = len(set)
 idx = N // 2
+#573306
 
 default = 1, 3, 26, 2, 14, 2
 
@@ -28,7 +29,7 @@ f_mlt = "obj7.asc"
 f_idx = "indice.txt"
 f_res = "resultat.txt"
 
-files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57", "02_05_2016_15.06/", "28_03_2016_19.07/"]])
+files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/"]])
 
 files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/"]])
 
@@ -96,6 +97,12 @@ def next(idx, pas, lossValue):
     if res == idx:
         pas //= 2
     return res, pas, lossValue
+
+for file in files[0] + files[1]:
+    with open (file[2]) as f:
+        iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
+    with open(file[2], 'w') as f:
+        f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
 
 while pas >= 1:
     idx, pas, lossValue = next(idx, pas, lossValue)
