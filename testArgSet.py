@@ -101,7 +101,7 @@ def next(idx, pas, lossValue):
         pas //= 2
     return res, pas, lossValue
 
-def opt_int(idx, lossValue = float('inf'), pas = 100 * 4 * 2):
+def opt_int(idx, lossValue = float('inf'), pas = 800):
     idx0, lossValue0, pas0 = idx, lossValue, pas
     try:
         res = idxDict[(idx0, lossValue0, pas0)]
@@ -119,4 +119,9 @@ def opt_int(idx, lossValue = float('inf'), pas = 100 * 4 * 2):
     with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
         f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + '\n')
     return res
+
+"""
+Il faut commencer avec différentes valeurs de test afin de pouvoir optimiser le meilleur minimum
+"""
+
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
