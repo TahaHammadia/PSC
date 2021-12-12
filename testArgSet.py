@@ -11,7 +11,8 @@ setPas = [(i,j) for i in range(3, 10) for j in range(2, i)] # nb_pas, pas_bug
 setVide = [i for i in range(7, 16)] # nbr_vide
 
 set = [(a, b, c, d,e) for a,b in setSeuil for c, d in setPas for e in setVide]
-#N = len(set)
+
+N = len(set)
 #idx = N // 2
 #573306
 
@@ -79,18 +80,22 @@ def next(idx, pas, lossValue):
     if idx >= pas:
         listLoss.append((idx - pas, loss(idx - pas, files)))
     else:
-        listLoss = [(0, loss(0, files))]
+        listLoss.append((0, loss(0, files)))
 
     if idx < N - pas:
         listLoss.append((idx + pas, loss(idx + pas, files)))
     else:
-        listLoss = [(N - 1, loss(N - 1, files))]
+        listLoss.append((N - 1, loss(N - 1, files)))
 
     res = -1
     for i in range(1, 3):
-        if listLoss[i][1] < lossValue:
-            lossValue = listLoss[i][1]
-            res = listLoss[i][0]
+        try:
+            if listLoss[i][1] < lossValue:
+                lossValue = listLoss[i][1]
+                res = listLoss[i][0]
+        except IndexError:
+            print(listLoss)
+            raise(IndexError)
     if listLoss[0][1] <= lossValue:
         lossValue = listLoss[0][1]
         res = idx
@@ -120,8 +125,6 @@ def opt_int(idx, lossValue = float('inf'), pas = 800):
         f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + '\n')
     return res
 
-"""
-Il faut commencer avec différentes valeurs de test afin de pouvoir optimiser le meilleur minimum
-"""
-
+for idx in range(0, 1146600, 80000):
+    opt_int(idx)
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
