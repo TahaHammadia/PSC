@@ -11,46 +11,46 @@ setPas = [(i,j) for i in range(3, 10) for j in range(2, i)] # nb_pas, pas_bug
 setVide = [i for i in range(7, 16)] # nbr_vide
 
 set = [(a, b, c, d,e) for a,b in setSeuil for c, d in setPas for e in setVide]
-N = len(set)
-idx = N // 2
+#N = len(set)
+#idx = N // 2
 #573306
 
 default = 1, 3, 26, 2, 14, 2
 
-pas = 100 * 4 * 2
+
 
 alpha = 0.3
 
-lossValue = float('inf')
 
-ud0 = "C:/Users/hp 650 G3/Desktop/Test/File[0]/"
-ud1 = "C:/Users/hp 650 G3/Desktop/Test/File[1]/"
+ud0 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[0]/"
+ud1 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[1]/"
 
 f_ions = "obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"
 f_mlt = "obj7.asc"
 f_idx = "indice.txt"
 f_res = "resultat.txt"
 
-files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/"]])
 
-files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/"]])
+files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/", "05_04_2016_16.22/", "05_04_2016_18.16/", "27_04_2016_13.14/", "01_05_2016_20.22/"]])
+
+files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/", "01_01_2017_05.14/", "13_06_2018_22.41/", "13_06_2018_22.51/", "27_09_2019_01.09/"]])
 
 files = [files0, files1]
 
 lossDict = {}
 infoDict = {}
+idxDict= {}
 
 def loss(idx, files):
     """
     files est un tuple ou liste dont le premier élément est une liste de cas de charges et le second une liste de non cas de charges.
     """
-    N = (len(files[0]) + len(files[1])) / 2
     try :
 
         return lossDict[idx]
 
     except KeyError:
-
+        N = (len(files[0]) + len(files[1])) / 2
         cpt = [0, 0]
 
         for i in range(2):
@@ -101,17 +101,22 @@ def next(idx, pas, lossValue):
         pas //= 2
     return res, pas, lossValue
 
-for file in files[0] + files[1]:
-    with open (file[2]) as f:
-        iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
-    with open(file[2], 'w') as f:
-        f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
+def opt_int(idx, lossValue = float('inf'), pas = 100 * 4 * 2):
+    idx0, lossValue0, pas0 = idx, lossValue, pas
+    try:
+        res = idxDict[(idx0, lossValue0, pas0)]
+    except KeyError:
+        for file in files[0] + files[1]:
+            with open (file[2]) as f:
+                iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
+            with open(file[2], 'w') as f:
+                f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
 
-while pas >= 1:
-    idx, pas, lossValue = next(idx, pas, lossValue)
-
-
-print(idx, pas, lossValue)
-
-
+        while pas >= 1:
+            idx, pas, lossValue = next(idx, pas, lossValue)
+        idxDict[(idx0, lossValue0, pas0)] = idx, lossValue, pas
+        res = idx, lossValue, pas
+    with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
+        f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + '\n')
+    return res
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
