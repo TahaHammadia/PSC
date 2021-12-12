@@ -106,6 +106,7 @@ def next(idx, pas, lossValue):
         pas //= 2
     return res, pas, lossValue
 
+
 def opt_int(idx, lossValue = float('inf'), pas = 800):
     idx0, lossValue0, pas0 = idx, lossValue, pas
     try:
