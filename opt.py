@@ -12,7 +12,8 @@ setBug = [j for j in range(2, 9)]  #pas_bug
 #setMod16 = [(i,j) for i in range(12, 17) for j in range(1, min(i, 4))] # canalmax_mod16, canalmin_mod16
 setVide = [i for i in range(7, 16)] # nbr_vide
 
-pasid = []
+pasid = [9, 9, 1, 1, 2]
+lset = [setSeuilActif, setSeuilInactif, setPas, setBug, setVide]
 
 ud0 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[0]/"
 ud1 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[1]/"
@@ -29,6 +30,9 @@ files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for d
 
 files = [files0, files1]
 
+lossDict = {}
+idxDict = {}
+
 def init():
     for file in files0 + files1:
         Nions = sum(1 for line in open(file[0]))
@@ -37,13 +41,13 @@ def init():
             f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
 
 
-def loss(idx, files):
+def loss(idarg, files):
     """
     files est un tuple ou liste dont le premier élément est une liste de cas de charges et le second une liste de non cas de charges.
     """
     try :
 
-        return lossDict[idx][0]
+        return lossDict[idarg][0]
 
     except KeyError:
         N = (len(files[0]) + len(files[1])) / 2
@@ -52,39 +56,36 @@ def loss(idx, files):
         for i in range(2):
             for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[i] :
 
-                args = [set[idx][0], set[idx][1], default[0], default[1], set[idx][2], set[idx][3], default[2], default[3], default[4], default[5], set[idx][4]]
+                args = [setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], default[0], default[1], setPas[idarg[2]], setBug[idarg[3]], default[2], default[3], default[4], default[5], setVide[idarg[4]]]
 
-                cal = Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)
-                infoDict[idx] = cal[0]
-                if cal[1]: cpt[i] += 1
+                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args): cpt[i] += 1
 
         if cpt[0] == 0: val = float('inf')
 
         else: val = (len(files[0]) - cpt[0] + alpha * cpt[1]) / N
 
-        lossDict[idx] = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
+        lossDict[idarg] = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
         return val
 
-def opt_int(idx, lossValue = float('inf'), pas = 800):
-    """
-    À modifier...
-    """
-    idx0, lossValue0, pas0 = idx, lossValue, pas
+def opt_int(idarg, lossValue = float('inf'), pas = pasid):
+
+    idarg0, lossValue0, pas0 = idarg, lossValue, pas
     try:
-        res = idxDict[(idx0, lossValue0, pas0)]
+        res = idxDict[(idarg0, lossValue0, pas0)]
     except KeyError:
         for file in files[0] + files[1]:
             with open (file[2]) as f:
                 iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
             with open(file[2], 'w') as f:
                 f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
-
-        while pas >= 1:
-            idx, pas, lossValue = next(idx, pas, lossValue)
-        idxDict[(idx0, lossValue0, pas0)] = idx, lossValue, pas
-        res = idx, lossValue, pas
+        k = 2
+        while k > 1:
+            idarg, pas, lossValue = next(idarg, pas, lossValue)
+            k = pas[0] * pas[1] * pas[2] * pas[3] * pas[4]
+        idxDict[(idarg0, lossValue0, pas0)] = idarg, lossValue, pas
+        res = idarg, lossValue, pas
     with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
-        f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossDict[idx][1]) + " " + str(lossDict[idx][2]) + '\n')
+        f.write(str(idarg0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idarg) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossDict[idarg][1]) + " " + str(lossDict[idarg][2]) + '\n')
     return res
 
 #init()
