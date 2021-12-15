@@ -32,7 +32,7 @@ f_idx = "indice.txt"
 f_res = "resultat.txt"
 
 
-files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/", "05_04_2016_16.22/", "05_04_2016_18.16/", "27_04_2016_13.14/", "01_05_2016_20.22/"]])
+files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/", "05_04_2016_16.22/", "05_04_2016_18.16/", "27_04_2016_13.14/", "01_05_2016_20.22/", "03_01_2020_07.19/", "05_01_2020_00.30/", "25_03_2020_11.38"]])
 
 files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/", "01_01_2017_05.14/", "13_06_2018_22.41/", "13_06_2018_22.51/", "27_09_2019_01.09/"]])
 
@@ -41,6 +41,14 @@ files = [files0, files1]
 lossDict = {}
 infoDict = {}
 idxDict= {}
+
+def init():
+    for file in files0 + files1:
+        Nions = sum(1 for line in open(file[0]))
+        Nmlt = sum(1 for line in open(file[1]))
+        with open(file[2], 'w') as f:
+            f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
+
 
 def loss(idx, files):
     """
@@ -125,7 +133,7 @@ def opt_int(idx, lossValue = float('inf'), pas = 800):
     with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
         f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + '\n')
     return res
-
+init()
 for idx in range(0, 1146600, 80000):
     opt_int(idx)
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
