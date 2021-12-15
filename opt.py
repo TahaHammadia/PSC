@@ -66,7 +66,55 @@ def loss(idarg, files):
 
         lossDict[idarg] = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
         return val
+    
+    
+def next(idargs, pasid, lossValue):
+    
+    l=lossValue
+    j=-1
+    d=0
+    
+    for i in range(len(args)):
+        
+        A=idargs.copy()
+        A[i]+=pasid[i]
+        
+        if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]]:
+            
+            m=loss(A)
+            
+            if m<l:
+                l=m
+                j=i
+                d=1
+        
+        A[i]-=2*pasid[i]
+        
+        if A[i]>=0 and setSeuilActif[A[0]]>setSeuilInactif[A[1]]:
+            
+            m=loss(A)
+            
+            if m<l:
+                l=m
+                j=i
+                d=-1
+    
+    if d==0:
 
+        
+        for i in range(len(args)):
+            
+            pasid[i]=pasid[i]//2+1
+        
+        return (idargs,pasid,lossValue)
+    
+    else:
+        
+        idargs[j]+=d*pasid[j]
+        
+        return(idargs,pasid,l)
+    
+    
 def opt_int(idarg, lossValue = float('inf'), pas = pasid):
 
     idarg0, lossValue0, pas0 = idarg, lossValue, pas
