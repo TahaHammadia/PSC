@@ -144,7 +144,7 @@ def AnalyseSplit(dossier, n=12,l=14979648, nb_canaux_max = 2, pas_bug = 4, nbr_v
 
 
 
-def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,26,2,14,2,14]):
+def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,26,2,14,2,14], printing = True):
     """
     Récupère l'état de la recherche de cas chargeants dans fichier_index.
     Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
@@ -200,7 +200,8 @@ def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500
 
     t2=time.time()
 
-    print(str(dat['Center_time'][len(dat)-1])+'   analyse terminée,   temps mis '+str(int((t2-t0)*100)/100)+'s')
+    if printing:
+        print(str(dat['Center_time'][len(dat)-1])+'   analyse terminée,   temps mis '+str(int((t2-t0)*100)/100)+'s')
 
     del dat
 
@@ -234,9 +235,9 @@ def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     return infos
 
 def Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args):
-    res = Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[2]
+    res = Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args, False)[2]
     with open (fichier_index) as f:
         iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
     with open(fichier_index, 'w') as f:
         f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
-    return (res[1] > 0)
+    return (res > 0)
