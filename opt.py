@@ -3,25 +3,16 @@ from sys import path
 path.append("C:/Users/hp 650 G3/Documents/GitHub/PSC")
 from main import Analyse2Test
 
-setSeuil = [(i,j) for i in range(100, 1010, 10) for j in range(50, i, 10)] # seuil_actif, seuil_inactif
+setSeuilActif = [i for i in range(100, 1010, 10)] # seuil_actif
+setSeuilInactif = [j for j in range(50, 1000, 10)]# seuil inactif
 #setCanaux = [(i,j) for i in range(2, 4) for j in range(1, i)] # nb_canaux_max, nb_canaux_min
-setPas = [(i,j) for i in range(3, 10) for j in range(2, i)] # nb_pas, pas_bug
+setPas = [i for i in range(3, 10)] # nb_pas
+setBug = [j for j in range(2, 9)]  #pas_bug
 #setMod32 = [(i,j) for i in range(24, 33) for j in range(1, min(i, 8))] # canalmax_mod32, canalmin_mod32
 #setMod16 = [(i,j) for i in range(12, 17) for j in range(1, min(i, 4))] # canalmax_mod16, canalmin_mod16
 setVide = [i for i in range(7, 16)] # nbr_vide
 
-set = [(a, b, c, d,e) for a,b in setSeuil for c, d in setPas for e in setVide]
-
-N = len(set)
-#idx = N // 2
-#573306
-
-default = 1, 3, 26, 2, 14, 2
-
-
-
-alpha = 0.3
-
+pasid = []
 
 ud0 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[0]/"
 ud1 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[1]/"
@@ -37,10 +28,6 @@ files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for d
 files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/", "01_01_2017_05.14/", "13_06_2018_22.41/", "13_06_2018_22.51/", "27_09_2019_01.09/", "03_06_2017/", "07_03_2017/", "09_04_2017/", "09_12_2017/", "14_10_2017/", "19_05_2017/", "21_03_2017/", "21_04_2017/", "21_11_2017/", "25_10_2017/", "28_05_2017/"]])
 
 files = [files0, files1]
-
-lossDict = {}
-infoDict = {}
-idxDict= {}
 
 def init():
     for file in files0 + files1:
@@ -78,44 +65,10 @@ def loss(idx, files):
         lossDict[idx] = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
         return val
 
-
-def next(idx, pas, lossValue):
-    """
-    Calcule et renvoie les prochaines valeurs de idx, pas et lossValue.
-    """
-
-    listLoss = [(idx, loss(idx, files))]
-    if idx >= pas:
-        listLoss.append((idx - pas, loss(idx - pas, files)))
-    else:
-        listLoss.append((0, loss(0, files)))
-
-    if idx < N - pas:
-        listLoss.append((idx + pas, loss(idx + pas, files)))
-    else:
-        listLoss.append((N - 1, loss(N - 1, files)))
-
-    res = -1
-    for i in range(1, 3):
-        try:
-            if listLoss[i][1] < lossValue:
-                lossValue = listLoss[i][1]
-                res = listLoss[i][0]
-        except IndexError:
-            print(listLoss)
-            raise(IndexError)
-    if listLoss[0][1] <= lossValue:
-        lossValue = listLoss[0][1]
-        res = idx
-
-    if res == -1:
-        raise ValueError("lossValue too small")
-    if res == idx:
-        pas //= 2
-    return res, pas, lossValue
-
-
 def opt_int(idx, lossValue = float('inf'), pas = 800):
+    """
+    À modifier...
+    """
     idx0, lossValue0, pas0 = idx, lossValue, pas
     try:
         res = idxDict[(idx0, lossValue0, pas0)]
@@ -133,7 +86,5 @@ def opt_int(idx, lossValue = float('inf'), pas = 800):
     with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
         f.write(str(idx0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idx) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossDict[idx][1]) + " " + str(lossDict[idx][2]) + '\n')
     return res
-init()
-for idx in range(0, 1146600, 80000):
-    opt_int(idx)
-# args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
+
+#init()
