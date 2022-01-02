@@ -1,6 +1,13 @@
 from sys import path
+from numpy import random
 
-path.append("C:/Users/hp 650 G3/Documents/GitHub/PSC")
+ad_may="A:/Travail/X/PSC/python"
+ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
+
+ad=ad_may
+# ad=ad_taha
+
+path.append(ad)
 from main import Analyse2Test
 
 setSeuilActif = [i for i in range(100, 1010, 10)] # seuil_actif
@@ -17,8 +24,8 @@ pasid = [30, 30, 1, 1, 3, 3, 3]
 lset = [setSeuilActif, setSeuilInactif, setCanauxMin, setCanauxMax, setPas, setBug, setVide]
 default = 1, 3, 26, 2, 14, 2
 
-ud0 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[0]/"
-ud1 = "C:/Users/hp 650 G3/Documents/GitHub/PSC/File[1]/"
+ud0 = ad+"/File[0]/"
+ud1 = ad+"/File[1]/"
 
 f_ions = "obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"
 f_mlt = "obj7.asc"
@@ -43,7 +50,7 @@ def init():
         with open(file[2], 'w') as f:
             f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
             
-    with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
+    with open(ad+"/res.txt", 'a') as f:
         f.writelines(["___________________________", '\n'])
 
 
@@ -63,7 +70,7 @@ def loss(idarg, files):
 
         for i in range(2):
             for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[i] :
-                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args): cpt[i] += 1
+                if Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[1]: cpt[i] += 1
 
         if cpt[0] == 0: val = float('inf')
 
@@ -75,15 +82,15 @@ def loss(idarg, files):
     return res[0]
     
     
-def next(idargs, pasid, lossValue):
+def next(idarg, pasid, lossValue):
     
     l=lossValue
     j=-1
     d=0
     
-    for i in range(len(idargs)):
+    for i in range(len(idarg)):
         
-        A=idargs.copy()
+        A=idarg.copy()
         A[i]+=pasid[i]
         
         if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]]:
@@ -109,18 +116,22 @@ def next(idargs, pasid, lossValue):
     if d==0:
 
         
-        for i in range(len(idargs)):
+        for i in range(len(idarg)):
             
             if pasid[i] != 1:
                 pasid[i]=pasid[i]//2
         
-        return (idargs,pasid,lossValue)
+        print("Réduction du pas : "+str(pasid))
+        
+        return (idarg,pasid,lossValue)
     
     else:
         
-        idargs[j]+=d*pasid[j]
+        idarg[j]+=d*pasid[j]
         
-        return(idargs,pasid,l)
+        print("Progression au point : "+str([setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], setCanauxMin[idarg[2]], setCanauxMax[idarg[3]], setPas[idarg[4]], setBug[idarg[5]], default[2], default[3], default[4], default[5], setVide[idarg[6]]]))
+        
+        return(idarg,pasid,l)
     
     
 def opt_int(idarg, lossValue = float('inf'), pas = pasid):
@@ -137,12 +148,35 @@ def opt_int(idarg, lossValue = float('inf'), pas = pasid):
         chemin.append((idarg, lossValue))
         k = pas[0] * pas[1] * pas[2] * pas[3] * pas[4]
     res = idarg, lossValue, pas
-    with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/res.txt", 'a') as f:
+    with open(ad+"/res.txt", 'a') as f:
         f.write(str(idarg0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idarg) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])]) + " " + str(lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])]) + '\n')
     return res, chemin
 
 max_beg = [len(setSeuilActif) - 1, 0, len(setPas) - 1, 0, 0]
-init()
-print(opt_int([74, 7, 0, 1, 0, 0, 1], pas = [1] * 7))
+
+# init()
+# print(opt_int([74, 7, 0, 1, 0, 0, 1], pas = [1] * 7))
 
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
+
+def testrandom(pas=pasid):
+    
+    idarg=[]
+    
+    for Set in lset:
+        
+        idarg.append(random.randint(len(Set)))
+        
+    while setSeuilActif[idarg[0]]<setSeuilInactif[idarg[1]] or setCanauxMax[idarg[3]]<setCanauxMin[idarg[2]]:
+        
+        idarg=[]
+        
+        for Set in lset:
+            
+            idarg.append(random.randint(len(Set)))
+    
+    init()
+    print(opt_int(idarg,pas=pas))
+
+for k in range(10):
+    testrandom()
