@@ -78,7 +78,8 @@ def loss(idarg, files):
 
         res = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
         lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])] = res
-    print(args, int(1000*res[0])/1000, int(1000*res[1])/1000, int(1000*res[2])/1000)
+    if res[0]==float('inf'): print(args, 'inf', int(1000*res[1])/1000, int(1000*res[2])/1000)
+    else: print(args, int(1000*res[0])/1000, int(1000*res[1])/1000, int(1000*res[2])/1000)
     return res[0]
     
     
@@ -145,7 +146,7 @@ def opt_int(idarg, lossValue = float('inf'), pas = pasid):
     k = 2
     while k > 1:
         idarg, pas, lossValue = next(idarg, pas, lossValue)
-        chemin.append((idarg, lossValue))
+        chemin.append((idarg.copy(), lossValue))
         k = pas[0] * pas[1] * pas[2] * pas[3] * pas[4]
     res = idarg, lossValue, pas
     with open(ad+"/res.txt", 'a') as f:
