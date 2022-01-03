@@ -14,7 +14,7 @@ def Tri(dataset, nbr_vide):
 
         invlat = float(dataset["INVLAT"][i])
 
-        if  45<=invlat<91 or -91<invlat<=-60 :
+        if  45<=invlat or invlat<=-60 :
             # On prend une valeur plus proche du pôle dans la région sud afin d'éviter l'anomalie SAA.
 
 #             On convertit MLT s'il est de type str:

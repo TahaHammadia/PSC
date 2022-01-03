@@ -53,12 +53,15 @@ def init():
     with open(ad+"/res.txt", 'a') as f:
         f.writelines(["___________________________", '\n'])
 
+def Args(idarg):
+    return [setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], setCanauxMin[idarg[2]], setCanauxMax[idarg[3]], setPas[idarg[4]], setBug[idarg[5]], default[2], default[3], default[4], default[5], setVide[idarg[6]]]
+
 
 def loss(idarg, files):
     """
     files est un tuple ou liste dont le premier élément est une liste de cas de charges et le second une liste de non cas de charges.
     """
-    args = [setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], setCanauxMin[idarg[2]], setCanauxMax[idarg[3]], setPas[idarg[4]], setBug[idarg[5]], default[2], default[3], default[4], default[5], setVide[idarg[6]]]
+    args = Args(idarg)
     
     try :
 
@@ -94,7 +97,7 @@ def next(idarg, pasid, lossValue):
         A=idarg.copy()
         A[i]+=pasid[i]
         
-        if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]]:
+        if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]] and setBug[A[5]]<=setPas[A[4]]:
             
             m=loss(A, files)
             
@@ -105,7 +108,7 @@ def next(idarg, pasid, lossValue):
         
         A[i]-=2*pasid[i]
         
-        if A[i]>=0 and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]]:
+        if A[i]>=0 and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]] and setBug[A[5]]<=setPas[A[4]]:
             
             m=loss(A, files)
             
@@ -120,7 +123,7 @@ def next(idarg, pasid, lossValue):
         for i in range(len(idarg)):
             
             if pasid[i] != 1:
-                pasid[i]=pasid[i]//2
+                pasid[i]=abs(pasid[i]//2)
         
         print("Réduction du pas : "+str(pasid))
         
@@ -130,14 +133,14 @@ def next(idarg, pasid, lossValue):
         
         idarg[j]+=d*pasid[j]
         
-        print("Progression au point : "+str([setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], setCanauxMin[idarg[2]], setCanauxMax[idarg[3]], setPas[idarg[4]], setBug[idarg[5]], default[2], default[3], default[4], default[5], setVide[idarg[6]]]))
+        print("Progression au point : "+str(Args(idarg)))
         
         return(idarg,pasid,l)
     
     
-def opt_int(idarg, lossValue = float('inf'), pas = pasid):
+def opt_int(idarg, lossValue = float('inf'), pas = pasid.copy()):
     chemin = [(idarg, lossValue)]
-    idarg0, lossValue0, pas0 = idarg, lossValue, pas
+    idarg0, lossValue0, pas0 = idarg.copy(), lossValue, pas.copy()
     for file in files[0] + files[1]:
         with open (file[2]) as f:
             iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
@@ -150,7 +153,7 @@ def opt_int(idarg, lossValue = float('inf'), pas = pasid):
         k = pas[0] * pas[1] * pas[2] * pas[3] * pas[4]
     res = idarg, lossValue, pas
     with open(ad+"/res.txt", 'a') as f:
-        f.write(str(idarg0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idarg) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])]) + " " + str(lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])]) + '\n')
+        f.write(str(idarg0) + ' ' + str(lossValue0) + ' ' + str(pas0) + ' :: ' + str(idarg) + ' ' + str(lossValue) + ' ' + str(pas) + str(lossValue) + '\n')
     return res, chemin
 
 max_beg = [len(setSeuilActif) - 1, 0, len(setPas) - 1, 0, 0]
@@ -160,7 +163,7 @@ max_beg = [len(setSeuilActif) - 1, 0, len(setPas) - 1, 0, 0]
 
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
 
-def testrandom(pas=pasid):
+def testrandom(tpas=pasid.copy()):
     
     idarg=[]
     
@@ -168,7 +171,7 @@ def testrandom(pas=pasid):
         
         idarg.append(random.randint(len(Set)))
         
-    while setSeuilActif[idarg[0]]<setSeuilInactif[idarg[1]] or setCanauxMax[idarg[3]]<setCanauxMin[idarg[2]]:
+    while setSeuilActif[idarg[0]]<setSeuilInactif[idarg[1]] or setCanauxMax[idarg[3]]<setCanauxMin[idarg[2]] or setBug[idarg[5]]>setPas[idarg[4]]:
         
         idarg=[]
         
@@ -177,7 +180,25 @@ def testrandom(pas=pasid):
             idarg.append(random.randint(len(Set)))
     
     init()
-    print(opt_int(idarg,pas=pas))
+    tpas[0]+=(random.randint(2)-1)*random.randint(5)
+    tpas[1]+=(random.randint(2)-1)*random.randint(5)
+    tpas[4]+=(random.randint(2)-1)
+    tpas[5]+=(random.randint(2)-1)
+    tpas[6]+=(random.randint(2)-1)
+    print(opt_int(idarg,pas=tpas.copy()))
 
-for k in range(10):
-    testrandom()
+
+def grapharg(idarg):
+    
+    args=Args(idarg)
+    
+    for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[0] :
+        infos=Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[0]
+        if len(infos)==0:
+            print('Erreur info vide : '+str(fichier_index))
+        else:
+            Traceboth(infos)
+
+# for k in range(50):
+#     testrandom()
+    
