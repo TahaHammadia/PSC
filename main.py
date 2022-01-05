@@ -1,10 +1,10 @@
 from sys import path
 
-ad_may="A:/Travail/X/PSC/python/"
+ad_may="A:/Travail/X/PSC/python"
 ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-#ad=ad_may
-ad=ad_taha
+ad=ad_may
+# ad=ad_taha
 
 path.append(ad)
 
@@ -144,7 +144,7 @@ def AnalyseSplit(dossier, n=12,l=14979648, nb_canaux_max = 2, pas_bug = 4, nbr_v
 
 
 
-def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,26,2,14,2,14], printing = True):
+def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500,200,1,3,5,5,26,2,14,2,14],printing=True):
     """
     Récupère l'état de la recherche de cas chargeants dans fichier_index.
     Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
@@ -200,7 +200,7 @@ def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500
 
     t2=time.time()
 
-    if printing:
+    if printing and len(dat)>0:
         print(str(dat['Center_time'][len(dat)-1])+'   analyse terminée,   temps mis '+str(int((t2-t0)*100)/100)+'s')
 
     del dat
@@ -234,10 +234,39 @@ def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
 
     return infos
 
+
 def Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args):
-    res = Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args, False)[2]
+    res = Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args,False)[1:]
     with open (fichier_index) as f:
         iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
     with open(fichier_index, 'w') as f:
         f.writelines(['1','\n','1','\n',str(Nions),'\n',str(Nmlt)])
-    return (res > 0)
+    return (res[0], res[1] > 0)
+
+
+def Analyse2Split(dossier, args, n=12,l=14979648):
+
+    ud=ad+"/data/"+dossier
+    num_lines_mlt = sum(1 for line in open(ud+"/obj7.asc"))
+    num_lines_ions= l
+    k=1
+
+    for i in range(2,n+2):
+
+        if i==n+1:
+            num_lines_ions = sum(1 for line in open(ud+"/obj5 ("+str(i)+")"))
+
+
+        index=ud+"/index"+str(i)+".txt" # ça commence à 2
+
+        # si le fichier index n'existe pas, on le crée
+        if not os.path.isfile(index):
+            with open(index, 'w') as f:
+                f.writelines("1\n"+str(k)+"\n"+str(num_lines_ions)+"\n"+str(num_lines_mlt))
+
+        for j in range(num_lines_ions//100000+1):
+
+            k,infos,L=Analyse2(ud+"/obj5 ("+str(i)+")",ud+"/obj7.asc",index,ud+"/resultats.txt", args)
+            if len(infos)==0:
+                break
+            del infos

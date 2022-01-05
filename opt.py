@@ -188,11 +188,11 @@ def testrandom(tpas=pasid.copy()):
     print(opt_int(idarg,pas=tpas.copy()))
 
 
-def grapharg(idarg):
+def grapharg(idarg,i=0):
     
     args=Args(idarg)
     
-    for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[0] :
+    for fichier_ions,fichier_mlt,fichier_index,fichier_resultats in files[i] :
         infos=Analyse2Test(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args)[0]
         if len(infos)==0:
             print('Erreur info vide : '+str(fichier_index))
