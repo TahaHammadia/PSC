@@ -3,14 +3,15 @@ from sys import path
 ad_may="A:/Travail/X/PSC/python"
 ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-ad=ad_may
-# ad=ad_taha
+#ad=ad_may
+ad=ad_taha
 
 path.append(ad)
 
 from temps import temps
 from tri import Tri
 from find import CasdeCharge2
+from find import CasdeCharge3
 from data import charge_ligne
 import pandas as pd
 import time
@@ -213,12 +214,12 @@ def Analyse2(fichier_ions,fichier_mlt,fichier_index,fichier_resultats, args=[500
 def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     """
     Permet d'analyser un dossier contenant le fichier obj5_Panel01_JASON3_AMBRE_P10_SC1.asc comme fichier_ion et obj7.asc comme fichier mlt.
-    Se sert de l'algo CasDeCharge2 à travers Analys2
+    Se sert de l'algo CasDeCharge2 à travers Analyse2
     Crée automatiquement l'index et les résultats.
     Utile lorsqu'on télécharge directement les données depuis CLweb.
     """
 
-    ud=ad+"data/"+dossier
+    ud=ad+"/data/"+dossier
 
     num_lines_ions = sum(1 for line in open(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"))
     num_lines_mlt = sum(1 for line in open(ud+"/obj7.asc"))
@@ -229,7 +230,7 @@ def Analyse2Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     infos=Analyse2(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)[1]
 
     for i in range(1,num_lines_ions//100000+1):
-        k,S=Analyse2(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)
+        k,S, n=Analyse2(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)
         infos.append(S)
 
     return infos
@@ -270,3 +271,88 @@ def Analyse2Split(dossier, args, n=12,l=14979648):
             if len(infos)==0:
                 break
             del infos
+
+
+def Analyse3(fichier_ions,fichier_mlt,fichier_index, args=[500,200,1,3,5,5,26,2,14,2,14],printing=True):
+    """
+    Récupère l'état de la recherche de cas chargeants dans fichier_index.
+    Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
+    écris les instants détectés dans fichier_resultats et actualise fichier_index à chaque itération
+    Utilise la version CasDeCharge2 avec args comme arguments
+    """
+
+    nbr_vide=args[10]
+
+    t0=time.time()
+    t2=t0
+
+    # Récupérer l'état de la recherche de cas chargeants
+    # iions est l'indice de la première ligne non analysée du fichier_ion, pareil pour imlt
+    # Nions est le nombre de lignes du fichier_ion, idem pour Nmlt
+    with open (fichier_index) as f:
+        iions,imlt,Nions,Nmlt = list(map(int, f.readlines()))
+
+
+    # fions est la ligne de fin de l'itération
+    # fmlt est une prédiction (car il faut une borne) de la fin de l'itération
+    fions=min(Nions,iions+100000)
+    fmlt=min(Nmlt,imlt+5000)
+
+    # j le nombre de lignes de fichier_mlt parcourues lors de la construction de dat
+    dat,j=charge_ligne(fichier_ions,fichier_mlt,iions,fions,imlt,fmlt)
+
+    # datsort correspond à dat selectionné par Tri. Elle ne contient que des lignes qui peuvent contenir des cas de charge.
+    datsort=dat.iloc[Tri(dat, nbr_vide)]
+
+
+    # L est la liste des résultats de la détection de cas de charge.
+    infos=CasdeCharge3(datsort, args)
+    del datsort
+
+
+
+    # fmlt est actualisé pour avoir la valeur exacte de l'indice de fin de parcourt.
+    fmlt=imlt+j
+
+    # on actualise le fichier_index
+    with open(fichier_index, 'w') as f:
+        f.writelines([str(fions),'\n',str(fmlt),'\n',str(Nions),'\n',str(Nmlt)])
+
+
+    # sinon on recommence avec pour indice de départ celui où on s'est arrêté.
+    iions=fions
+    imlt=fmlt
+
+    t2=time.time()
+
+    if printing and len(dat)>0:
+        print(str(dat['Center_time'][len(dat)-1])+'   analyse terminée,   temps mis '+str(int((t2-t0)*100)/100)+'s')
+
+    del dat
+
+    # on renvoie l'indice de mlt où le parcourt s'est arrêté. Cela permet d'optimiser AnalyseSplit. Ainsi que les infos recueillies
+    return(fmlt,infos)
+
+def Analyse3Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
+    """
+    Permet d'analyser un dossier contenant le fichier obj5_Panel01_JASON3_AMBRE_P10_SC1.asc comme fichier_ion et obj7.asc comme fichier mlt.
+    Se sert de l'algo CasDeCharge2 à travers Analyse2
+    Crée automatiquement l'index et les résultats.
+    Utile lorsqu'on télécharge directement les données depuis CLweb.
+    """
+
+    ud=ad+"/data/"+dossier
+
+    num_lines_ions = sum(1 for line in open(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"))
+    num_lines_mlt = sum(1 for line in open(ud+"/obj7.asc"))
+
+    with open(ud+"/index.txt", 'w') as f:
+        f.writelines("1\n1\n"+str(num_lines_ions)+"\n"+str(num_lines_mlt))
+
+    infos=Analyse3(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",args)[1]
+
+    for i in range(1,num_lines_ions//100000+1):
+        k,S=Analyse3(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)
+        infos = infos.append(S, ignore_index=True)
+
+    return infos

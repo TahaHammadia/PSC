@@ -4,8 +4,8 @@ from numpy import random
 ad_may="A:/Travail/X/PSC/python"
 ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-ad=ad_may
-# ad=ad_taha
+#ad=ad_may
+ad=ad_taha
 
 path.append(ad)
 from main import Analyse2Test
