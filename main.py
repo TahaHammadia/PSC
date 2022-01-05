@@ -13,6 +13,7 @@ from tri import Tri
 from find import CasdeCharge2
 from find import CasdeCharge3
 from data import charge_ligne
+from trait_fus import trait_fus
 import pandas as pd
 import time
 import os
@@ -273,14 +274,13 @@ def Analyse2Split(dossier, args, n=12,l=14979648):
             del infos
 
 
-def Analyse3(fichier_ions,fichier_mlt,fichier_index, args=[500,200,1,3,5,5,26,2,14,2,14],printing=True):
+def Analyse3(fichier_ions,fichier_mlt,fichier_index, args=[500,200,1,3,5,5,26,2,14,2,14],printing=False):
     """
     Récupère l'état de la recherche de cas chargeants dans fichier_index.
     Continue la recherche de cas chargeants en analysant 100 000 lignes de fichier_ions et les lignes correspondantes de fichier_mlt.
     écris les instants détectés dans fichier_resultats et actualise fichier_index à chaque itération
-    Utilise la version CasDeCharge2 avec args comme arguments
+    Utilise la version CasDeCharge3 avec args comme arguments
     """
-
     nbr_vide=args[10]
 
     t0=time.time()
@@ -306,8 +306,7 @@ def Analyse3(fichier_ions,fichier_mlt,fichier_index, args=[500,200,1,3,5,5,26,2,
 
 
     # L est la liste des résultats de la détection de cas de charge.
-    infos=CasdeCharge3(datsort, args)
-    del datsort
+    liste_cas=CasdeCharge3(datsort, args)
 
 
 
@@ -331,12 +330,13 @@ def Analyse3(fichier_ions,fichier_mlt,fichier_index, args=[500,200,1,3,5,5,26,2,
     del dat
 
     # on renvoie l'indice de mlt où le parcourt s'est arrêté. Cela permet d'optimiser AnalyseSplit. Ainsi que les infos recueillies
-    return(fmlt,infos)
+    return(fmlt,liste_cas, datsort)
+
 
 def Analyse3Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     """
     Permet d'analyser un dossier contenant le fichier obj5_Panel01_JASON3_AMBRE_P10_SC1.asc comme fichier_ion et obj7.asc comme fichier mlt.
-    Se sert de l'algo CasDeCharge2 à travers Analyse2
+    Se sert de l'algo CasDeCharge3 à travers Analyse30
     Crée automatiquement l'index et les résultats.
     Utile lorsqu'on télécharge directement les données depuis CLweb.
     """
@@ -349,10 +349,10 @@ def Analyse3Dossier(dossier,args=[500,200,1,3,5,5,26,2,14,2,14]):
     with open(ud+"/index.txt", 'w') as f:
         f.writelines("1\n1\n"+str(num_lines_ions)+"\n"+str(num_lines_mlt))
 
-    infos=Analyse3(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",args)[1]
+    liste = Analyse3(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",args)[1:3]
 
     for i in range(1,num_lines_ions//100000+1):
-        k,S=Analyse3(ud+"/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc",ud+"/obj7.asc",ud+"/index.txt",ud+"/resultats.txt",args)
-        infos = infos.append(S, ignore_index=True)
+        liste.append(S[1:3])
 
-    return infos
+    return liste
+

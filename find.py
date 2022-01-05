@@ -187,6 +187,7 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
     Renvoie une liste de couples indice-instant des cas de charge identifiés et des infos sur la détection.
     Un cas de charge correspond à une succession suffisament longue de dépassement de seuil de count dans un nombre restreint de canaux, tandis que les autres restent en dessous d'un autre seuil.
     Permet de collecter d'une façon optimisée les données relatives aux cas de charges pour une analyse ultérieure.
+    Nous allons considérer qu'un cas de charge peut occuper une durée de 10 min (ceci se justifie à partir du rapport AMBRE).
     """
 
     seuil_actif=args[0]
@@ -203,7 +204,6 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
 
 
     key=['Center_time'] +  ["E" + str(i) for i in range(1, 33)] + ['MLT','INVLAT','mod16']+['cas_consec','bug_consec']
-    infos=pd.DataFrame(columns=key)
 
 
     liste_cas=[]
@@ -216,7 +216,6 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
     for i in dataSort.index:
     # on parcourt la dataframe triée ligne par ligne
 
-        liste_canal=32*[0]
         n_sup=0
         n_inf=0
 
@@ -231,7 +230,7 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
 
     # on décompte les canaux dépassant le seuil d'activation et ceux le seuil d'incativation.
     # Ceux du seuil d'activation doivent être plus nombreux que nb_canaux_min, tandis que ceux du seuil d'inactivation doivent être moins nombreux que nb_canaux_min.
-
+        second = False
         t=False
         for canal in range(canalrange_min, canalrange_max+1): # enlever les bords
 
@@ -239,18 +238,15 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
 
             if A>seuil_inactif:
 
-                liste_canal[canal-1]=1
                 n_inf+=1
 
                 if A>seuil_actif:
 
-                    liste_canal[canal-1]=2
                     n_sup+=1
-
-
-                    if len(infos)>1 and i-1 in infos.index and infos['E'+str(canal)][i-1]==2:
+                    if second:
                         t=True
-
+                    second = True
+                else : second = False
 
             # if i%10==0:
             #     print('E'+str(canal)+'  : '+str(A)+'  '+str(A>seuil_inactif)+'   '+str(A>seuil_actif))
@@ -265,8 +261,6 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
     # cas_consec compte le nombre de fois qu'un bon nombre de canaux dépasse le seuil
         if nb_canaux_min <= n_sup and n_inf <= nb_canaux_max:
             cas_consec+=1
-            S=[dataSort['Center_time'][i]]+liste_canal+[dataSort['MLT'][i],dataSort['INVLAT'][i],dataSort['mod16'][i]]+[cas_consec]+[bug_consec]+[False]
-            infos=infos.append({key[j] : S[j] for j in range(len(S))},ignore_index=True)
         else:
             cas_consec=0
 
@@ -278,14 +272,6 @@ def CasdeCharge3(dataSort, args=[500,200,1,3,5,2,22,2,12,2]):
         if cas_consec==nb_pas:
             liste_cas.append([i,dataSort['Center_time'][i]])
 
-    t0 = liste_cas[0][1]
-    for i in range(len(infos)):
-        for k in range(1, nb_pas + 1):
-            if dataSort['Center_time'][i + k] == t0:
-                break
-        else:
-            dataSort.drop(i)
-
         # if i%10==0:
         #     print(str(cas_consec)+'   '+str(n_inf)+'   '+str(n_sup))
-    return infos
+    return liste_cas

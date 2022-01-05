@@ -6,7 +6,6 @@ def Tri(dataset, nbr_vide):
     Renvoie une liste d'indices des lignes du dataframe.
     Ces indices sont déterminés selon les critères suivants : la latitude (les pôles, en évitant l'Anomalie de l'Atlantique Sud), l'heure magnétique locale, et le nombre de canaux nuls en prenant en compte le mode.
     """
-
     Resultat=[]
     k=0
     Mod_16 = []
