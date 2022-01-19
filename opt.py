@@ -4,14 +4,14 @@ from numpy import random
 ad_may="A:/Travail/X/PSC/python"
 ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-#ad=ad_may
-ad=ad_taha
+ad=ad_may
+# ad=ad_taha
 
 path.append(ad)
 from main import Analyse2Test
 
 setSeuilActif = [i for i in range(100, 1010, 10)] # seuil_actif
-setSeuilInactif = [j for j in range(50, 1000, 10)]# seuil inactif
+setSeuilInactif = [j for j in range(0, 600, 10)]# seuil inactif
 setCanauxMin = [i for i in range(1, 4)]
 setCanauxMax = [j for j in range(2, 6)]
 setPas = [i for i in range(3, 10)] # nb_pas
@@ -22,7 +22,7 @@ setVide = [i for i in range(7, 16)] # nbr_vide
 
 pasid = [30, 30, 1, 1, 3, 3, 3]
 lset = [setSeuilActif, setSeuilInactif, setCanauxMin, setCanauxMax, setPas, setBug, setVide]
-default = 1, 3, 26, 2, 14, 2
+default = 1, 3, 28, 2, 14, 2
 
 ud0 = ad+"/File[0]/"
 ud1 = ad+"/File[1]/"
@@ -163,7 +163,7 @@ max_beg = [len(setSeuilActif) - 1, 0, len(setPas) - 1, 0, 0]
 
 # args = [seuil_actif, seuil_inactif, nb_canaux_min, nb_canaux_max, nb_pas, pas_bug, canalmax_mod32, canalmin_mod32, canalmax_mod16, canalmin_mod16, nbr_vide]
 
-def testrandom(tpas=pasid.copy()):
+def testrandom(tpas):
     
     idarg=[]
     
@@ -200,5 +200,5 @@ def grapharg(idarg,i=0):
             Traceboth(infos)
 
 # for k in range(50):
-#     testrandom()
+#     testrandom(pasid.copy())
     
