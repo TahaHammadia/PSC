@@ -27,9 +27,9 @@ def duree(date):  # On peut mettre ça comme un attribut
     sec = date[5]
 
     res = 0
-    for n in range(2015, an):
+    for n in range(2015, int(an)):
         res += jours_annee(n)
-    for m in range(1, mois):
+    for m in range(1, int(mois)):
         res += jours_mois(an, m)
 
     return sec + 60 * (min + 60 * (heure + 24 * (jour - 1 + res)))
@@ -38,7 +38,6 @@ class t:
 
     def __init__(self, string):
 
-        if letters:
             self.a = []
             text = ''
             for c in string :

@@ -38,7 +38,7 @@ def pic(driver, beg, end):
 
     sleep(2)
     screen = pyautogui.screenshot()
-    screen.save("C:/Users/hp 650 G3/Documents/GitHub/PSC/data/Pics"+ beg + "__" + end + ".png")
+    screen.save("C:/Users/hp 650 G3/Documents/GitHub/PSC/data/Pics0"+ beg + "__" + end + ".png")
 
 
 def hotPics():
