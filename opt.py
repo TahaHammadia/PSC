@@ -4,25 +4,25 @@ from numpy import random
 ad_may="A:/Travail/X/PSC/python"
 ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
 
-#ad=ad_may
-ad=ad_taha
+ad=ad_may
+# ad=ad_taha
 
 path.append(ad)
 from main import Analyse2Test
 
 setSeuilActif = [i for i in range(100, 1010, 10)] # seuil_actif
 setSeuilInactif = [j for j in range(0, 600, 10)]# seuil inactif
-setCanauxMin = [i for i in range(1, 4)]
+# setCanauxMin = [i for i in range(1, 4)]
 setCanauxMax = [j for j in range(2, 6)]
 setPas = [i for i in range(3, 10)] # nb_pas
 setBug = [j for j in range(2, 9)]  #pas_bug
 #setMod32 = [(i,j) for i in range(24, 33) for j in range(1, min(i, 8))] # canalmax_mod32, canalmin_mod32
 #setMod16 = [(i,j) for i in range(12, 17) for j in range(1, min(i, 4))] # canalmax_mod16, canalmin_mod16
-setVide = [i for i in range(7, 16)] # nbr_vide
+# setVide = [i for i in range(7, 16)] # nbr_vide
 
-pasid = [30, 30, 1, 1, 3, 3, 3]
-lset = [setSeuilActif, setSeuilInactif, setCanauxMin, setCanauxMax, setPas, setBug, setVide]
-default = 1, 3, 28, 2, 14, 2
+pasid = [30, 30, 1, 3, 3]
+lset = [setSeuilActif, setSeuilInactif, setCanauxMax, setPas, setBug]
+default = 1, 3, 28, 3, 14, 3, 15
 
 ud0 = ad+"/File[0]/"
 ud1 = ad+"/File[1]/"
@@ -36,7 +36,7 @@ alpha = 0.3
 
 files0 = list([tuple(ud0 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["16_04_2017_16.56/", "16_07_2017_01.13/", "16_07_2017_19.29/", "17_09_2019_08.57/", "02_05_2016_15.06/", "28_03_2016_19.07/", "05_04_2016_16.22/", "05_04_2016_18.16/", "27_04_2016_13.14/", "01_05_2016_20.22/", "03_01_2020_07.19/", "05_01_2020_00.30/", "25_03_2020_11.38/", "25_06_2020_18.24/", "25_06_2020_18.26/", "27_06_2018_20.14/", "10_11_2017_18.27/", "15_02_2018_16.50/", "14_08_2017_13.12/", "27_01_2018_00.45/"]])
 
-files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/", "01_01_2017_05.14/", "13_06_2018_22.41/", "13_06_2018_22.51/", "27_09_2019_01.09/", "03_06_2017/", "07_03_2017/", "09_04_2017/", "09_12_2017/", "14_10_2017/", "19_05_2017/", "21_03_2017/", "21_04_2017/", "21_11_2017/", "25_10_2017/", "28_05_2017/", "02_11_2017_00.38/", "02_11_2017_23.03/", "04_04_2017_08.39/", "05_03_2017_18.24/", "05_09_2017_02.25/", "05_09_2017_09.51/", "06_02_2018_05.01"]])
+files1 = list([tuple(ud1 + dat + f for f in [f_ions, f_mlt, f_idx, f_res]) for dat in ["20_10_2017_02.41/", "28_01_2018_01.06/", "28_05_2017_4.38/", "31_10_2019_00.02/", "01_01_2017_05.14/", "13_06_2018_22.41/", "13_06_2018_22.51/", "27_09_2019_01.09/", "03_06_2017/", "07_03_2017/", "09_04_2017/", "09_12_2017/", "14_10_2017/", "19_05_2017/", "21_03_2017/", "21_04_2017/", "21_11_2017/", "25_10_2017/", "28_05_2017/", "02_11_2017_00.38/", "02_11_2017_23.03/", "04_04_2017_08.39/", "05_03_2017_18.24/", "05_09_2017_02.25/", "05_09_2017_09.51/", "06_02_2018_05.01/"]])
 
 files = [files0, files1]
 
@@ -54,7 +54,7 @@ def init():
         f.writelines(["___________________________", '\n'])
 
 def Args(idarg):
-    return [setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], setCanauxMin[idarg[2]], setCanauxMax[idarg[3]], setPas[idarg[4]], setBug[idarg[5]], default[2], default[3], default[4], default[5], setVide[idarg[6]]]
+    return [setSeuilActif[idarg[0]], setSeuilInactif[idarg[1]], default[0], setCanauxMax[idarg[2]], setPas[idarg[3]], setBug[idarg[4]], default[2], default[3], default[4], default[5], default[6]]
 
 
 def loss(idarg, files):
@@ -65,7 +65,7 @@ def loss(idarg, files):
     
     try :
 
-        res =  lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])]
+        res =  lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])]
 
     except KeyError:
         N = (len(files[0]) + len(files[1])) / 2
@@ -80,7 +80,7 @@ def loss(idarg, files):
         else: val = (len(files[0]) - cpt[0] + alpha * cpt[1]) / N
 
         res = val, (len(files[0]) - cpt[0]) / N, cpt[1] / N
-        lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])+ "_" + str(idarg[5])+ "_" + str(idarg[6])] = res
+        lossDict[str(idarg[0]) + "_" + str(idarg[1]) + "_" + str(idarg[2]) + "_" + str(idarg[3]) + "_" + str(idarg[4])] = res
     if res[0]==float('inf'): print(args, 'inf', int(1000*res[1])/1000, int(1000*res[2])/1000)
     else: print(args, int(1000*res[0])/1000, int(1000*res[1])/1000, int(1000*res[2])/1000)
     return res[0]
@@ -97,7 +97,7 @@ def next(idarg, pasid, lossValue):
         A=idarg.copy()
         A[i]+=pasid[i]
         
-        if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]] and setBug[A[5]]<=setPas[A[4]]:
+        if A[i]<len(lset[i]) and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setBug[A[4]]<=setPas[A[3]]:
             
             m=loss(A, files)
             
@@ -108,7 +108,7 @@ def next(idarg, pasid, lossValue):
         
         A[i]-=2*pasid[i]
         
-        if A[i]>=0 and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setCanauxMin[A[2]]<setCanauxMax[A[3]] and setBug[A[5]]<=setPas[A[4]]:
+        if A[i]>=0 and setSeuilActif[A[0]]>setSeuilInactif[A[1]] and setBug[A[4]]<=setPas[A[3]]:
             
             m=loss(A, files)
             
@@ -171,7 +171,7 @@ def testrandom(tpas):
         
         idarg.append(random.randint(len(Set)))
         
-    while setSeuilActif[idarg[0]]<setSeuilInactif[idarg[1]] or setCanauxMax[idarg[3]]<setCanauxMin[idarg[2]] or setBug[idarg[5]]>setPas[idarg[4]]:
+    while setSeuilActif[idarg[0]]<setSeuilInactif[idarg[1]] or setBug[idarg[4]]>setPas[idarg[3]]:
         
         idarg=[]
         
@@ -183,8 +183,8 @@ def testrandom(tpas):
     tpas[0]+=(random.randint(2)-1)*random.randint(5)
     tpas[1]+=(random.randint(2)-1)*random.randint(5)
     tpas[4]+=(random.randint(2)-1)
-    tpas[5]+=(random.randint(2)-1)
-    tpas[6]+=(random.randint(2)-1)
+    # tpas[5]+=(random.randint(2)-1)
+    # tpas[6]+=(random.randint(2)-1)
     print(opt_int(idarg,pas=tpas.copy()))
 
 
@@ -199,6 +199,6 @@ def grapharg(idarg,i=0):
         else:
             Traceboth(infos)
 
-# for k in range(50):
-#     testrandom(pasid.copy())
+for k in range(50):
+    testrandom(pasid.copy())
     
