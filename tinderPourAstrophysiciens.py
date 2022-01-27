@@ -50,13 +50,13 @@ def hotPics():
         input("")
         sleep(5)
         times = []
-        with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/resMayTa.txt") as f:
+        with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/casCharge[58, 5, 0, 2, 0, 0, 8] [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15].txt") as f:
             times = f.readlines()
         times_beg = [t_ClWeb(elt) for elt in times]
         times_end = [t_ClWeb(elt) for elt in times]
         for i in range(len(times_beg)):
-            times_beg[i].ajouter(-120)
-            times_end[i].ajouter(120) # on prend des images qui s'étalent sur 4 min
+            times_beg[i].ajouter(-90)
+            times_end[i].ajouter(90) # on prend des images qui s'étalent sur 4 min
             print(times[i], times_beg[i], times_end[i], "\n")
             pic(driver, str(times_beg[i]), str(times_end[i]))
 
