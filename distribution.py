@@ -1,6 +1,7 @@
 from math import sqrt
+from math import pi
 
-K=sqrt(9.1*10**(-31))*10**6/(sqrt(2)*16*10**(-3)*1.5*10**(-4))
+K=4*pi*sqrt(9.1*10**(-31))*10**6/(sqrt(2)*16*10**(-3)*1.5*10**(-4))
 e=1.6*10**(-19)
 
 Energy16=[ 12.65,   20.88,      34.46,    56.89,   93.90,     154.99,    255.85,   422.32,   697.10,   1150.69,   1899.40,   3135.27,  5175.28,  8542.65,  14101.05,  23276.10] #Ce sont les énergies des canaux, on les a dans les fichiers ascii
@@ -46,10 +47,12 @@ def distrib_corr(liste_count_electr,potentiel,mod16):
 
 # nous avons accès au nombre d'électrons dans une plage d'énergie qui heurtent le détecteur durant une durée de mesure dt.
 # ce nombre est noté z(E1) où E1 est l'énergie cinétique qu'à l'électron quand il frappe le détecteur
-# on a donc z(E1)=dt*surface*dE1*v(E1)*n(E) avec v la vitesse de l'électron et E l'énergie cinétique initiale de l'électron
-# ainsi E=E1-eU avec U le potentiel du satelliste
+# on a donc z(E1)=4pi*dt*surface_eff*dE1*v(E1)*n(E) avec v la vitesse de l'électron et E l'énergie cinétique initiale de l'électron
+# ainsi E=E1-eU avec U le potentiel du satellite
 # et E1=1/2*m*v^2
-# finalement n(E)=z(E1)/(sqrt(E1)*dE1)*sqrt(m)/(sqrt(2)*dt*surface)
+#
+# on a un facteur donné par le constructeur gef=surface_eff*dE1/E1
+# finalement n(E)=z(E1)/(sqrt(E1)*E1)*sqrt(m)/(sqrt(2)*dt*gef)
 # donc n(E)=K*z(E1)/(sqrt(E1)*dE1)
 # avec K=sqrt(m)/(sqrt(2)*dt*surface)
 # il y a un facteur 10**6 en plus dans le K venant du fait que la z=10**6 * mesure ambre
