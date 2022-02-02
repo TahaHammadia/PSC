@@ -30,7 +30,7 @@ def charge_ligne(fichier_ions,fichier_e,ligne_debut,ligne_fin):
 
     IE = ["IE" + str(i) for i in range(1, 33)]
     EE = ["EE" + str(i) for i in range(1, 33)]
-    key=['Center_time'] +  IE + ['mod16_IE'] + EE + ['mod16_EE'] + ["potentiel"]
+    key=['Center_time'] +  IE + ['Imod16'] + EE + ['Emod16'] + ["potentiel"]
 
     datS=[]
 

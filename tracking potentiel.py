@@ -29,18 +29,20 @@ def tracking(database_ions_electrons, args):
         S=0
         M=0
 
-         for canal in range(canalrange_min, canalrange_max+1):
+        for canal in range(canalrange_min, canalrange_max+1):
 
              A=db['IE'+str(canal)][k] # A est donc le count d'ions pour ce canal d'énergie
 
              if A>seuil: # on fait la moyenne uniquement sur les canaux dont le count dépasse le seuil: l'idée c'est que pour déterminer le potentiel, il faut retirer ce qui n'est pas induit par le potentiel du satellite, donc tous le spectre qui est inférieur au seuil
 
                 S+=A
-                M+=A*Energy[canal] # on fait la moyenne des énergies pondérées par le count: il faut déterminer le potentiel, on pourrait prendre le canal qui a le maximum de coups en se disant que cela correspond directement au potentiel. on préfère faire une moyenne pondérée par le nombre de coups.
+                M+=A*Energy[canal - 1] # on fait la moyenne des énergies pondérées par le count: il faut déterminer le potentiel, on pourrait prendre le canal qui a le maximum de coups en se disant que cela correspond directement au potentiel. on préfère faire une moyenne pondérée par le nombre de coups.
 
-        M=M/S
-
-        db['potentiel'][k]=-M
+        if S != 0:
+            M=-M/S
+        else:
+            M = None
+        db['potentiel'][k]=M
 
 
 
