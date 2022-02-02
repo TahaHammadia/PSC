@@ -1,4 +1,8 @@
 def tracking(database_ions_electrons, args):
+    '''
+    Cette fonction calcule à chaque instant le potentiel du satellite à partir du pic d'ions reçu caractérisant un cas de charge. Lorsqu'un cas de charge se présente, un grand nombre d'ions frappent le détecteur à l'énergie correspondante au potentiel du satellite. En suivant cette énergie au cours du temps, on détermine le potentiel du satellite.
+    La fonction rempli la colonne 'potentiel' de la database_ions_electrons en faisant une moyenne des énergies des ions qui dépassent un seuil quantitatif, pondéré par le nombre.
+    '''
 
     db=database_ions_electrons
 
@@ -36,11 +40,13 @@ def tracking(database_ions_electrons, args):
              if A>seuil: # on fait la moyenne uniquement sur les canaux dont le count dépasse le seuil: l'idée c'est que pour déterminer le potentiel, il faut retirer ce qui n'est pas induit par le potentiel du satellite, donc tous le spectre qui est inférieur au seuil
 
                 S+=A
-                M+=A*Energy[canal] # on fait la moyenne des énergies pondérées par le count: il faut déterminer le potentiel, on pourrait prendre le canal qui a le maximum de coups en se disant que cela correspond directement au potentiel. on préfère faire une moyenne pondérée par le nombre de coups.
+                M+=A*Energy[canal-1] # on fait la moyenne des énergies pondérées par le count: il faut déterminer le potentiel, on pourrait prendre le canal qui a le maximum de coups en se disant que cela correspond directement au potentiel. on préfère faire une moyenne pondérée par le nombre de coups.
+        if S==0:
+            M=None
+        else:
+            M=-M/S
 
-        M=M/S
-
-        db['potentiel'][k]=-M
+        db['potentiel'][k]=M
 
 
 
