@@ -1,7 +1,7 @@
 from math import sqrt
 from math import pi
 
-K=4*pi*sqrt(9.1*10**(-31))*10**6/(sqrt(2)*16*10**(-3)*1.5*10**(-4))
+K=4*pi*sqrt(9.1*10**(-31))/(sqrt(2)*16*10**(-3)*1.5*10**(-8))
 e=1.6*10**(-19)
 
 Energy16=[ 12.65,   20.88,      34.46,    56.89,   93.90,     154.99,    255.85,   422.32,   697.10,   1150.69,   1899.40,   3135.27,  5175.28,  8542.65,  14101.05,  23276.10] #Ce sont les énergies des canaux, on les a dans les fichiers ascii
@@ -36,7 +36,7 @@ def distrib_corr(liste_count_electr,potentiel,mod16):
             N=32
 
         for i in range(N):
-            ncorr.append(K*L[i]/(sqrt(Energy[i])*DeltaE[i]))
+            ncorr.append(K*L[i]/(sqrt(Energy[i]*e)*Energy[i]))
             Ereel.append(Enertg[i]-e*potentiel)
 
         return ncorr,Ereel

@@ -22,7 +22,7 @@ setBug = [j for j in range(2, 9)]  #pas_bug
 
 pasid = [30, 30, 1, 3, 3]
 lset = [setSeuilActif, setSeuilInactif, setCanauxMax, setPas, setBug]
-default = 1, 3, 28, 3, 14, 3, 15
+default = 1, 3, 32, 3, 16, 3, 15
 
 ud0 = ad+"/File[0]/"
 ud1 = ad+"/File[1]/"
