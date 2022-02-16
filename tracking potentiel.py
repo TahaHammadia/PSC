@@ -33,7 +33,7 @@ def tracking(database_ions_electrons, args):
         S=0
         M=0
 
-         for canal in range(canalrange_min, canalrange_max+1):
+        for canal in range(canalrange_min, canalrange_max+1):
 
              A=db['IE'+str(canal)][k] # A est donc le count d'ions pour ce canal d'énergie
 

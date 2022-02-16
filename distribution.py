@@ -37,7 +37,7 @@ def distrib_corr(liste_count_electr,potentiel,mod16):
 
         for i in range(N):
             ncorr.append(K*L[i]/(sqrt(Energy[i]*e)*Energy[i]))
-            Ereel.append(Energy[i]-e*potentiel)
+            Ereel.append(Energy[i]-potentiel)
 
         return ncorr,Ereel
 
