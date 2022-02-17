@@ -43,7 +43,7 @@ def fct2maxwell(E, n1, T1, n2, T2):
 
 
 # Optimisation
-def optimise():
+def optimise(seuil, inf = True):
     """
     Permet d'optimiser les paramètres de la distribution à deux maxwelliennes
     """
@@ -53,13 +53,28 @@ def optimise():
     potentiel = dat["potentiel"][ligne]
     mod16 = dat["Emod16"][ligne]
     ncorr,Ereel = distrib_corr(liste_count_electr,potentiel,mod16)
+    idx=0
 
-    if mod16:
-        N = 16
+    if inf:
+        for i in range(len(Ereel)):
+            if Ereel[i] + potentiel > seuil:
+                idx = i
+                break
+        idx1 = (len(ncorr)-idx)//3
+        idx2 = 2*idx1
+        idx1+= idx
+        idx2+=idx
+        best_vals, covar = curve_fit(fct2maxwell, Ereel[idx:], ncorr[idx:], p0 = [ncorr[idx1], Ereel[idx1], ncorr[idx2], Ereel[idx2]])
+
     else:
-        N = 32
-    idx1, idx2 = N//3, 2*N//3
+        for i in range(len(Ereel)):
+            if Ereel[i] + potentiel > seuil:
+                idx = i
+                break
+        idx1 = idx//3
+        idx2 = 2*idx1
+        best_vals, covar = curve_fit(fct2maxwell, Ereel[:idx+1], ncorr[:idx+1], p0 = [ncorr[idx1], Ereel[idx1], ncorr[idx2], Ereel[idx2]])
 
-    best_vals, covar = curve_fit(fct2maxwell, Ereel, ncorr, p0 = [ncorr[idx1], Ereel[idx1], ncorr[idx2], Ereel[idx2]])
     print('best_vals: {}'.format(best_vals))
     print('covar: {}'.format(np.sqrt(np.diag(covar))))
+    return best_vals
