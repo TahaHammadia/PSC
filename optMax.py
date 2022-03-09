@@ -1,7 +1,6 @@
 from scipy.stats import maxwell
 import numpy as np
 from math import pow
-import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from sys import path
 
@@ -16,11 +15,6 @@ path.append(ad)
 from dataElec import charge_ligne
 from tracking_potentiel import tracking
 from distribution import distrib_corr
-
-fichier_ions = "C:/Users/hp 650 G3/Desktop/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"
-fichier_e = "C:/Users/hp 650 G3/Desktop/obj3_Panel01_JASON3_AMBRE_P09_SC1.asc"
-args = [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15]
-ligne = 38
 
 
 # Fonctions de base
@@ -41,40 +35,62 @@ def maxE(E, n, T):
 def fct2maxwell(E, n1, T1, n2, T2):
     return maxE(E, n1, T1) + maxE(E, n2, T2)
 
+def fct3maxwell(E, n1, T1, n2, T2, n3, T3):
+    return maxE(E, n1, T1) + maxE(E, n2, T2) + maxE(E, n3, T3)
 
-# Optimisation
-def optimise(seuil, inf = True):
+fcts_max = [maxE, fct2maxwell, fct3maxwell]
+
+
+# Fonction d'optimisation avec tracking
+def optimise(dat, ligne, args, n_max, seuil = None, inf = True, modSeuil = False):
     """
     Permet d'optimiser les paramètres de la distribution à deux maxwelliennes
+
+    dat : dataframe du fichier à analyser
+    ligne : ligne à traiter dans le pandas.dataframe (la ligne est prise modulo la taille
+    args : arguments utilisés dans notre détection de cas
+
+    n_max : nombre de maxwelliennes utilisées pour le fitting
+    inf : déclare si on élimine la partie inférieure ou supérieur du spectre
+    seuil : seuil qui délimite les potentiels sur lesquels on optimise
     """
-    dat = charge_ligne(fichier_ions, fichier_e, 1, 1760)
+
+    if ligne >= dat.size:
+        raise(ValueError("Ligne demandée inexistante"))
+
     tracking(dat, args)
     liste_count_electr = [dat["EE" + str(k)][ligne] for k in range(1, 33)]
     potentiel = dat["potentiel"][ligne]
+    if potentiel != potentiel : raise(ValueError)
     mod16 = dat["Emod16"][ligne]
     ncorr,Ereel = distrib_corr(liste_count_electr,potentiel,mod16)
     idx=0
 
-    if inf:
-        for i in range(len(Ereel)):
-            if Ereel[i] + potentiel > seuil:
-                idx = i
-                break
-        idx1 = (len(ncorr)-idx)//3
-        idx2 = 2*idx1
-        idx1+= idx
-        idx2+=idx
-        best_vals, covar = curve_fit(fct2maxwell, Ereel[idx:], ncorr[idx:], p0 = [ncorr[idx1], Ereel[idx1], ncorr[idx2], Ereel[idx2]])
+    # Séparation selon le seuil et valeur initiales de l'optimisation
 
+    if modSeuil:
+        seuil_test = seuil - potentiel
     else:
-        for i in range(len(Ereel)):
-            if Ereel[i] + potentiel > seuil:
-                idx = i
-                break
-        idx1 = idx//3
-        idx2 = 2*idx1
-        best_vals, covar = curve_fit(fct2maxwell, Ereel[:idx+1], ncorr[:idx+1], p0 = [ncorr[idx1], Ereel[idx1], ncorr[idx2], Ereel[idx2]])
+        seuil_test = potentiel * 0.2
+    for i in range(len(Ereel)):
+        if Ereel[i] > seuil_test :
+            idx = i
+            break
 
+    if inf:
+        idX = [idx + k * (len(ncorr) - idx) // (n_max + 1) for k in range(1, 1 + n_max)]
+    else:
+        idX = [k * idx // (n_max + 1) for k in range(1, 1 + n_max)]
+
+    # Optimisation
+    P0 = []
+    for i in range(n_max):
+        P0.append(ncorr[idX[i]])
+        P0.append(Ereel[idX[i]])
+
+    best_vals, covar = curve_fit(fcts_max[n_max - 1], Ereel[idx:], ncorr[idx:], p0 = P0)
+
+    print('ligne:{}'.format(ligne))
     print('best_vals: {}'.format(best_vals))
     print('covar: {}'.format(np.sqrt(np.diag(covar))))
-    return best_vals
+    return best_vals, ncorr, Ereel

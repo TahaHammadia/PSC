@@ -1,8 +1,7 @@
 from math import sqrt
 from math import pi
 
-K=4*pi*sqrt(9.1*10**(-31))/(sqrt(2)*16*10**(-3)*1.5*10**(-8))
-e=1.6*10**(-19)
+K = 6.7 * 10**(-14)
 
 Energy16=[ 12.65,   20.88,      34.46,    56.89,   93.90,     154.99,    255.85,   422.32,   697.10,   1150.69,   1899.40,   3135.27,  5175.28,  8542.65,  14101.05,  23276.10] #Ce sont les énergies des canaux, on les a dans les fichiers ascii
 
@@ -13,6 +12,11 @@ DeltaE16=[6.25, 10.57, 17.45, 28.81, 47.55, 78.49, 129.57, 213.88, 353.04, 582.7
 DeltaE32=[2.65,3.60, 4.63, 5.95, 7.64, 9.81, 12.61, 16.20, 20.82, 26.74, 34.35, 44.14, 56.71, 72.86, 93.61, 120.26, 154.52, 198.53, 255.06, 327.69, 421.02, 540.91, 694.96, 892.87, 1147.14, 1473.82, 1893.54, 2432.79, 3125.61, 4015.73, 5159.34, 6163.89]
 
 
+def f(C, E):
+    """
+    E est en eV
+    """
+    return K * C / E**2
 
 def distrib_corr(liste_count_electr,potentiel,mod16):
     '''
@@ -36,7 +40,7 @@ def distrib_corr(liste_count_electr,potentiel,mod16):
             N=32
 
         for i in range(N):
-            ncorr.append(K*L[i]/(sqrt(Energy[i]*e)*Energy[i]))
+            ncorr.append(f(L[i], Energy[i]))
             Ereel.append(Energy[i]-potentiel)
 
         return ncorr,Ereel

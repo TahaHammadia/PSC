@@ -1,20 +1,44 @@
+from sys import path
+import matplotlib.pyplot as plt
+
+ad_may="A:/Travail/X/PSC/python/"
+ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
+
+#ad=ad_may
+ad=ad_taha
+
+path.append(ad)
+from optMax import *
+
+fichier_ions = "C:/Users/hp 650 G3/Desktop/obj5_Panel01_JASON3_AMBRE_P10_SC1.asc"
+fichier_e = "C:/Users/hp 650 G3/Desktop/obj3_Panel01_JASON3_AMBRE_P09_SC1.asc"
+args = [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15]
+
+
+ligne = 38
+n_max = 2
+Seuil = 500
+
 dat = charge_ligne(fichier_ions, fichier_e, 1, 1760)
-tracking(dat, args)
-liste_count_electr = [dat["EE" + str(k)][ligne] for k in range(1, 33)]
-potentiel = dat["potentiel"][ligne]
-mod16 = dat["Emod16"][ligne]
-ncorr,Ereel = distrib_corr(liste_count_electr,potentiel,mod16)
+for ligne in range(len(dat.index)):
+    try:
+        best_vals, ncorr, Ereel = optimise(dat, ligne, args, n_max, seuil = Seuil, modSeuil = True)
+    except ValueError:
+        continue
+    except RuntimeError:
+        continue
 
-plt.scatter(Ereel, ncorr)
+    plt.scatter(Ereel, ncorr)
 
-x=optimise(500)
-y = optimise(100, False)
-val1 = [fct2maxwell(E, x[0], x[1], x[2], x[3]) for E in Ereel]
-plt.plot(Ereel, val1)
+    if n_max == 1:
+        val = [fcts_max[0](E, best_vals[0], best_vals[1]) for E in Ereel]
+    if n_max == 2:
+        val = [fcts_max[1](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3]) for E in Ereel]
+    if n_max == 3:
+        val = [fcts_max[2](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3], best_vals[4], best_vals[5]) for E in Ereel]
 
-val2 = [fct2maxwell(E, y[0], y[1], y[2], y[3]) for E in Ereel]
-plt.plot(Ereel, val2)
+    plt.plot(Ereel, val)
 
-plt.xscale("log")
-plt.yscale("log")
-plt.show()
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.show()
