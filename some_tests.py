@@ -15,30 +15,37 @@ fichier_e = "C:/Users/hp 650 G3/Desktop/obj3_Panel01_JASON3_AMBRE_P09_SC1.asc"
 args = [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15]
 
 
-ligne = 38
+#ligne = 38
 n_max = 2
-Seuil = 500
+Seuil = 700
+
 
 dat = charge_ligne(fichier_ions, fichier_e, 1, 1760)
 for ligne in range(len(dat.index)):
     try:
-        best_vals, ncorr, Ereel = optimise(dat, ligne, args, n_max, seuil = Seuil, modSeuil = True)
+        best_vals, covar, ncorr, Ereel = optimise(dat, ligne, args, n_max, seuil = Seuil, modSeuil = True)
+        for k in range(n_max):
+            if best_vals[2*k] < 0:  # l'optimisateur fait de la m*rde et bounds ne marche pas
+                raise(ValueError)
+
     except ValueError:
         continue
     except RuntimeError:
         continue
 
-    plt.scatter(Ereel, ncorr)
 
-    if n_max == 1:
-        val = [fcts_max[0](E, best_vals[0], best_vals[1]) for E in Ereel]
-    if n_max == 2:
-        val = [fcts_max[1](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3]) for E in Ereel]
-    if n_max == 3:
-        val = [fcts_max[2](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3], best_vals[4], best_vals[5]) for E in Ereel]
+    #plt.scatter(Ereel, ncorr)
 
-    plt.plot(Ereel, val)
+    #if n_max == 1:
+        #val = [fcts_max[0](E, best_vals[0], best_vals[1]) for E in Ereel]
+    #if n_max == 2:
+        #val = [fcts_max[1](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3]) for E in Ereel]
+    #if n_max == 3:
+        #val = [fcts_max[2](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3], best_vals[4], best_vals[5]) for E in Ereel]
 
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.show()
+    #plt.plot(Ereel, val)
+
+    #plt.xscale("log")
+    #plt.yscale("log")
+    #plt.show()
+    #print(ligne)

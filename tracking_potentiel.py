@@ -1,7 +1,7 @@
 def tracking(database_ions_electrons, args):
     '''
     Cette fonction calcule à chaque instant le potentiel du satellite à partir du pic d'ions reçu caractérisant un cas de charge. Lorsqu'un cas de charge se présente, un grand nombre d'ions frappent le détecteur à l'énergie correspondante au potentiel du satellite. En suivant cette énergie au cours du temps, on détermine le potentiel du satellite.
-    La fonction rempli la colonne 'potentiel' de la database_ions_electrons en faisant une moyenne des énergies des ions qui dépassent un seuil quantitatif, pondéré par le nombre.
+    La fonction remplit la colonne 'potentiel' de la database_ions_electrons en faisant une moyenne des énergies des ions qui dépassent un seuil quantitatif, pondéré par le nombre.
     '''
 
     db=database_ions_electrons

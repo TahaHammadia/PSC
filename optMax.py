@@ -87,10 +87,9 @@ def optimise(dat, ligne, args, n_max, seuil = None, inf = True, modSeuil = False
     for i in range(n_max):
         P0.append(ncorr[idX[i]])
         P0.append(Ereel[idX[i]])
-
-    best_vals, covar = curve_fit(fcts_max[n_max - 1], Ereel[idx:], ncorr[idx:], p0 = P0)
+    best_vals, covar = curve_fit(fcts_max[n_max - 1], Ereel[idx:], ncorr[idx:], p0 = P0, check_finite = True)
 
     print('ligne:{}'.format(ligne))
     print('best_vals: {}'.format(best_vals))
     print('covar: {}'.format(np.sqrt(np.diag(covar))))
-    return best_vals, ncorr, Ereel
+    return best_vals, covar, ncorr, Ereel

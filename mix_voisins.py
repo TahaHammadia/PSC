@@ -64,7 +64,7 @@ class t:
         return self.__str__()
 
 times = []
-with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/resultats.txt") as f:
+with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/resultats [11, 6, 2, 1, 1] [210, 60, 1, 4, 4, 3, 28, 3, 14, 3, 15].txt") as f:
     times = f.readlines()
 times = [t(elt) for elt in times]
 idx0 = 0

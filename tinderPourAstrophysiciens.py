@@ -38,7 +38,7 @@ def pic(driver, beg, end):
 
     sleep(2)
     screen = pyautogui.screenshot()
-    screen.save("C:/Users/hp 650 G3/Documents/GitHub/PSC/data/Pics0"+ beg + "__" + end + ".png")
+    screen.save("C:/Users/hp 650 G3/Documents/GitHub/PSC/data/Pics/Pics"+ beg + "__" + end + ".png")
 
 
 def hotPics():
@@ -50,15 +50,16 @@ def hotPics():
         input("")
         sleep(5)
         times = []
-        with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/casCharge[58, 5, 0, 2, 0, 0, 8] [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15].txt") as f:
+        with open("C:/Users/hp 650 G3/Documents/GitHub/PSC/resMayTa.txt") as f:
             times = f.readlines()
         times_beg = [t_ClWeb(elt) for elt in times]
         times_end = [t_ClWeb(elt) for elt in times]
         for i in range(len(times_beg)):
             times_beg[i].ajouter(-90)
-            times_end[i].ajouter(90) # on prend des images qui s'étalent sur 4 min
+            times_end[i].ajouter(90) # on prend des images qui s'étalent sur 3 min
             print(times[i], times_beg[i], times_end[i], "\n")
             pic(driver, str(times_beg[i]), str(times_end[i]))
+            sleep(0.5)
 
     except NoSuchElementException:
         print("Il y a un élément qui manque")
