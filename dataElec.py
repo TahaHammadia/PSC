@@ -1,11 +1,6 @@
 import pandas as pd
 from sys import path
-
-ad_may="A:/Travail/X/PSC/python/"
-ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
-
-#ad=ad_may
-ad=ad_taha
+from main import ad
 
 path.append(ad)
 
