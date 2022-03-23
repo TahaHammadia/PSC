@@ -27,7 +27,7 @@ def maxE(E, n, T):
     Ici, T est la température équivalente en eV
     """
     try:
-        return 2/np.sqrt(np.pi) * n * np.sqrt(E*qe) / pow(abs(T)*qe, 1.5) * np.exp(-E/T)  # on multiplie par qe pour convertir en SI
+        return 2/np.sqrt(np.pi) * n * qe * np.sqrt(E*qe) / pow(abs(T)*qe, 1.5) * np.exp(-E/T)  # on multiplie par qe pour convertir en SI
     except:
         print(E, n, T)
         raise(KeyboardInterrupt)

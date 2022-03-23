@@ -17,8 +17,8 @@ args = [680, 50, 1, 4, 3, 2, 26, 2, 14, 2, 15]
 
 
 #ligne = 38
-n_max = 2
-Seuil = 200
+n_max = 3
+Seuil = 100
 
 
 dat = charge_ligne(fichier_ions, fichier_e, 1, 1760)
@@ -45,8 +45,7 @@ for ligne in range(len(dat.index)):
         val = [fcts_max[2](E, best_vals[0], best_vals[1], best_vals[2], best_vals[3], best_vals[4], best_vals[5]) for E in Ereel]
 
     plt.plot(Ereel, val)
-
-    plt.plot(Ereel, [10 * K/P(E) for E in Ereel])
+    #plt.plot(Ereel, [10*K/P(E) for E in Ereel])
 
     plt.xscale("log")
     plt.yscale("log")

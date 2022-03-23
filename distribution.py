@@ -1,7 +1,7 @@
 from math import sqrt, log
 from math import pi
 
-K = 1.1301973872042037e-13
+K = 706373.3670026272
 
 Energy16=[ 12.65,   20.88,      34.46,    56.89,   93.90,     154.99,    255.85,   422.32,   697.10,   1150.69,   1899.40,   3135.27,  5175.28,  8542.65,  14101.05,  23276.10] #Ce sont les énergies des canaux, on les a dans les fichiers ascii
 
