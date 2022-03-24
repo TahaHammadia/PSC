@@ -5,7 +5,7 @@ from scipy.optimize import curve_fit
 from sys import path
 
 ad_may="A:/Travail/X/PSC/python/"
-ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC"
+ad_taha="C:/Users/hp 650 G3/Documents/GitHub/PSC/"
 
 #ad=ad_may
 ad=ad_taha
@@ -40,16 +40,21 @@ def fct3maxwell(E, n1, T1, n2, T2, n3, T3):
 
 fcts_max = [maxE, fct2maxwell, fct3maxwell]
 
+def fmxw(E,parameters):
+    n_max=len(parameters)//2
+    value=0
+    for i in range(n_max):
+        value+=maxE(E,parameters[2*i],parameters[2*i+1])
+    return value
+
 
 # Fonction d'optimisation avec tracking
 def optimise(dat, ligne, args, n_max, seuil = None, inf = True, modSeuil = False):
     """
     Permet d'optimiser les paramètres de la distribution à deux maxwelliennes
-
     dat : dataframe du fichier à analyser
     ligne : ligne à traiter dans le pandas.dataframe (la ligne est prise modulo la taille
     args : arguments utilisés dans notre détection de cas
-
     n_max : nombre de maxwelliennes utilisées pour le fitting
     inf : déclare si on élimine la partie inférieure ou supérieur du spectre
     seuil : seuil qui délimite les potentiels sur lesquels on optimise
@@ -93,3 +98,47 @@ def optimise(dat, ligne, args, n_max, seuil = None, inf = True, modSeuil = False
     print('best_vals: {}'.format(best_vals))
     print('covar: {}'.format(np.sqrt(np.diag(covar))))
     return best_vals, covar, ncorr, Ereel
+
+
+def optdist(dist, ligne, n_max, seuil = None, inf = True, modSeuil = False):
+
+    if ligne >= dist.size:
+        raise(ValueError("Ligne demandée inexistante"))
+
+    potentiel=dist['U'][ligne]
+    if potentiel != potentiel : raise(ValueError)
+
+    mod16=dist['mod16'][ligne]
+    ncorr=dist['n'][ligne]
+    Ereel=dist['E'][ligne]
+
+
+    idx=0
+
+    # Séparation selon le seuil et valeur initiales de l'optimisation
+
+    if modSeuil:
+        seuil_test = seuil - potentiel
+    else:
+        seuil_test = potentiel * 0.2
+    for i in range(len(Ereel)):
+        if Ereel[i] > seuil_test :
+            idx = i
+            break
+
+    if inf:
+        idX = [idx + k * (len(ncorr) - idx) // (n_max + 1) for k in range(1, 1 + n_max)]
+    else:
+        idX = [k * idx // (n_max + 1) for k in range(1, 1 + n_max)]
+
+    # Optimisation
+    P0 = []
+    for i in range(n_max):
+        P0.append(ncorr[idX[i]])
+        P0.append(Ereel[idX[i]])
+    best_vals, covar = curve_fit(fcts_max[n_max - 1], Ereel[idx:], ncorr[idx:], p0 = P0, check_finite = True)
+
+    # print('ligne:{}'.format(ligne))
+    # print('best_vals: {}'.format(best_vals))
+    # print('covar: {}'.format(np.sqrt(np.diag(covar))))
+    return best_vals, covar
