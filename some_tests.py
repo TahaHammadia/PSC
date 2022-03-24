@@ -21,12 +21,12 @@ n_max = 3
 Seuil = 100
 
 
-dat = charge_ligne(fichier_ions, fichier_e, 1, 1760)
+dat = charge_ligne(fichier_ions, fichier_e, 1, 672)
 for ligne in range(len(dat.index)):
     try:
         best_vals, covar, ncorr, Ereel = optimise(dat, ligne, args, n_max, seuil = Seuil, modSeuil = True)
-        for k in range(n_max):
-            if best_vals[2*k] < 0:  # l'optimisateur fait de la m*rde et bounds ne marche pas
+        for k in range(2 * n_max):
+            if best_vals[k] < 0:  # l'optimisateur fait de la m*rde et bounds ne marche pas
                 raise(ValueError)
 
     except ValueError:
@@ -50,4 +50,3 @@ for ligne in range(len(dat.index)):
     plt.xscale("log")
     plt.yscale("log")
     plt.show()
-    print(ligne)
