@@ -1,5 +1,7 @@
-from math import sqrt, log
+from math import sqrt
 from math import pi
+from math import log
+import pandas as pd
 
 K = 706373.3670026272
 
@@ -11,8 +13,11 @@ DeltaE16=[6.25, 10.57, 17.45, 28.81, 47.55, 78.49, 129.57, 213.88, 353.04, 582.7
 
 DeltaE32=[2.65,3.60, 4.63, 5.95, 7.64, 9.81, 12.61, 16.20, 20.82, 26.74, 34.35, 44.14, 56.71, 72.86, 93.61, 120.26, 154.52, 198.53, 255.06, 327.69, 421.02, 540.91, 694.96, 892.87, 1147.14, 1473.82, 1893.54, 2432.79, 3125.61, 4015.73, 5159.34, 6163.89]
 
+
 def P(E):
     return (1.42 + 2.53 * log(E + 268, 10) - 0.721 * log(E + 268, 10)**2 + 0.0592 * log(E + 268, 10)**3) * (E ** (3/2))
+
+
 
 def f(C, E):
     """
@@ -21,6 +26,9 @@ def f(C, E):
     """
 
     return K * C / P(E)
+
+
+
 
 def distrib_corr(liste_count_electr,potentiel,mod16):
     '''
@@ -69,3 +77,18 @@ def distrib_corr(liste_count_electr,potentiel,mod16):
 
 
 
+
+def start_dist(dist):
+    '''
+    Identifie l'indice de début de cas de charge pour synchroniser.
+    '''
+    # on trouve l'instant où démarre le cas de charge avec l'instant où la dérivée de log(U) est max
+    m,k=0,0
+    for i in range(len(dist['U'])-1):
+        if dist['U'][i]!=None and not (pd.isna(dist['U'][i])) and dist['U'][i+1]!=None and not (pd.isna(dist['U'][i+1])):
+            dlU=log(-dist['U'][i+1])-log(-dist['U'][i])
+            if dlU>m*1.5: #coefficient arbitraire de 1.5
+                m=dlU
+                k=i
+            # print(dlU)
+    return k
